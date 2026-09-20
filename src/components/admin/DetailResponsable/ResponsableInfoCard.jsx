@@ -1,4 +1,4 @@
-import { Mail, Phone, UserRound } from "lucide-react";
+import { Mail, MapPin, Phone, UserRound } from "lucide-react";
 
 function InfoItem({ label, children }) {
   return (
@@ -18,9 +18,9 @@ export default function ResponsableInfoCard({
   firstName,
   lastName,
   fullName,
-  role,
   phone,
   email,
+  adresse,
   avatar,
 }) {
   return (
@@ -36,13 +36,6 @@ export default function ResponsableInfoCard({
             Informations du Responsable
           </h2>
         </div>
-
-        <button
-          type="button"
-          className="shrink-0 text-sm font-medium leading-5 tracking-tight text-cyan-800"
-        >
-          Modifier
-        </button>
       </div>
 
       {/* Contenu */}
@@ -59,34 +52,37 @@ export default function ResponsableInfoCard({
             <h3 className="truncate text-xl font-bold leading-7 text-sky-950">
               {fullName}
             </h3>
-
-            <p className="text-sm font-medium leading-6 tracking-tight text-cyan-800 sm:text-base">
-              {role}
-            </p>
           </div>
         </div>
 
         {/* Informations */}
         <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2">
           <InfoItem label="Nom de famille">
-            {lastName}
+            {lastName || "—"}
           </InfoItem>
 
           <InfoItem label="Prénom">
-            {firstName}
+            {firstName || "—"}
           </InfoItem>
 
           <InfoItem label="Téléphone professionnel">
             <div className="flex items-center gap-2">
               <Phone className="h-3.5 w-3.5 text-gray-400" />
-              <span>{phone}</span>
+              <span>{phone || "—"}</span>
             </div>
           </InfoItem>
 
           <InfoItem label="Adresse Email">
             <div className="flex items-center gap-2">
               <Mail className="h-3.5 w-3.5 text-gray-400" />
-              <span className="break-all">{email}</span>
+              <span className="break-all">{email || "—"}</span>
+            </div>
+          </InfoItem>
+
+          <InfoItem label="Adresse">
+            <div className="flex items-center gap-2">
+              <MapPin className="h-3.5 w-3.5 text-gray-400" />
+              <span>{adresse || "—"}</span>
             </div>
           </InfoItem>
         </div>

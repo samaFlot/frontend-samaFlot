@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AlertCircle,
-  ChevronDown,
   Truck,
   X,
 } from "lucide-react";
@@ -10,10 +9,128 @@ export default function EditVehicleDrawer({
   isOpen,
   onClose,
   vehicle,
+  onAdd,
+  onUpdate,
 }) {
-  const [status, setStatus] = useState(
-    vehicle?.status || "Disponible"
-  );
+  const [immatriculation, setImmatriculation] = useState("");
+  const [typeVehicule, setTypeVehicule] = useState("");
+  const [poids, setPoids] = useState("");
+  const [hauteur, setHauteur] = useState("");
+  const [largeur, setLargeur] = useState("");
+  const [status, setStatus] = useState("DISPONIBLE");
+
+  const [error, setError] = useState("");
+
+  // true = modification
+  // false = ajout
+  const isEdit = vehicle !== null;
+
+  // Remplit le formulaire lorsqu'on ouvre le drawer.
+  useEffect(() => {
+    if (vehicle) {
+      setImmatriculation(
+        vehicle.immatriculation || ""
+      );
+
+      setTypeVehicule(
+        vehicle.type_vehicule || ""
+      );
+
+      setPoids(
+        vehicle.poids || ""
+      );
+
+      setHauteur(
+        vehicle.hauteur || ""
+      );
+
+      setLargeur(
+        vehicle.largeur || ""
+      );
+
+      setStatus(
+        vehicle.statut || "DISPONIBLE"
+      );
+    } else {
+      // Formulaire vide pour un ajout.
+      setImmatriculation("");
+      setTypeVehicule("");
+      setPoids("");
+      setHauteur("");
+      setLargeur("");
+      setStatus("DISPONIBLE");
+    }
+
+    setError("");
+  }, [vehicle, isOpen]);
+
+  // Envoie le formulaire.
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    setError("");
+
+    // Vérification des champs obligatoires.
+    if (!immatriculation.trim()) {
+      setError(
+        "Veuillez saisir l'immatriculation."
+      );
+      return;
+    }
+
+    if (!typeVehicule.trim()) {
+      setError(
+        "Veuillez saisir le type de véhicule."
+      );
+      return;
+    }
+
+    if (!poids) {
+      setError("Veuillez saisir le poids.");
+      return;
+    }
+
+    if (!hauteur) {
+      setError("Veuillez saisir la hauteur.");
+      return;
+    }
+
+    if (!largeur) {
+      setError("Veuillez saisir la largeur.");
+      return;
+    }
+
+    // Données correspondant aux champs du backend.
+    const donnees = {
+      immatriculation: immatriculation.trim(),
+      type_vehicule: typeVehicule.trim(),
+      poids: poids,
+      hauteur: hauteur,
+      largeur: largeur,
+    };
+
+    if (isEdit) {
+      // En modification, on peut aussi modifier le statut.
+      donnees.statut = status;
+
+      const resultat = await onUpdate(
+        vehicle.id,
+        donnees
+      );
+
+      if (resultat) {
+        onClose();
+      }
+    } else {
+      // En création, on n'envoie pas le statut.
+      // Le backend met DISPONIBLE par défaut.
+      const resultat = await onAdd(donnees);
+
+      if (resultat) {
+        onClose();
+      }
+    }
+  };
 
   if (!isOpen) {
     return null;
@@ -35,11 +152,17 @@ export default function EditVehicleDrawer({
         <div className="flex shrink-0 items-center justify-between border-b border-slate-100 bg-white px-6 py-5 sm:px-8">
           <div className="min-w-0">
             <h2 className="text-xl font-bold leading-7 text-sky-950">
-              Modifier le véhicule
+              {isEdit
+                ? "Modifier le véhicule"
+                : "Ajouter un véhicule"}
             </h2>
 
             <p className="mt-1 text-xs font-medium leading-4 tracking-tight text-slate-400">
-              Référence : {vehicle?.registration || "DK-8821-BC"}
+              {isEdit
+                ? `Référence : ${
+                    vehicle?.immatriculation || ""
+                  }`
+                : "Ajouter un nouveau véhicule à votre flotte"}
             </p>
           </div>
 
@@ -57,6 +180,17 @@ export default function EditVehicleDrawer({
         <div className="min-h-0 flex-1 overflow-y-auto p-6 sm:p-8">
           <div className="flex flex-col gap-10">
 
+            {/* Erreur */}
+            {error && (
+              <div className="flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 p-4">
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
+
+                <p className="text-sm font-medium leading-5 text-red-500">
+                  {error}
+                </p>
+              </div>
+            )}
+
             {/* Identification */}
             <section className="flex flex-col gap-6">
               <div className="flex items-center gap-2">
@@ -68,6 +202,7 @@ export default function EditVehicleDrawer({
               </div>
 
               <div className="flex flex-col gap-6">
+
                 {/* Immatriculation */}
                 <div className="flex flex-col gap-2">
                   <label
@@ -83,7 +218,13 @@ export default function EditVehicleDrawer({
                     <input
                       id="registration"
                       type="text"
-                      defaultValue={vehicle?.registration || "DK-8821-BC"}
+                      value={immatriculation}
+                      onChange={(event) =>
+                        setImmatriculation(
+                          event.target.value
+                        )
+                      }
+                      placeholder="DK-1234-AB"
                       className="min-w-0 flex-1 bg-transparent px-3 py-3 text-base font-medium leading-6 text-sky-950 outline-none"
                     />
                   </div>
@@ -101,19 +242,18 @@ export default function EditVehicleDrawer({
                   <div className="relative">
                     <Truck className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
 
-                    <select
+                    <input
                       id="vehicleType"
-                      defaultValue={vehicle?.type || "Plateau"}
-                      className="w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-10 text-base font-medium leading-6 text-sky-950 outline-none focus:border-orange-500"
-                    >
-                      <option>Plateau</option>
-                      <option>Porteur</option>
-                      <option>Semi-remorque</option>
-                      <option>Citerne</option>
-                      <option>Frigorifique</option>
-                    </select>
-
-                    <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                      type="text"
+                      value={typeVehicule}
+                      onChange={(event) =>
+                        setTypeVehicule(
+                          event.target.value
+                        )
+                      }
+                      placeholder="Camion 35T"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-base font-medium leading-6 text-sky-950 outline-none focus:border-orange-500"
+                    />
                   </div>
                 </div>
               </div>
@@ -130,23 +270,31 @@ export default function EditVehicleDrawer({
               </div>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+
+                {/* Poids */}
                 <div className="flex flex-col gap-2">
                   <label
                     htmlFor="weight"
                     className="text-xs font-semibold leading-5 text-slate-600"
                   >
-                    Poids (t)
+                    Poids (kg)
                   </label>
 
                   <input
                     id="weight"
                     type="number"
-                    step="0.1"
-                    defaultValue={vehicle?.weight || "20.0"}
+                    min="0"
+                    step="0.01"
+                    value={poids}
+                    onChange={(event) =>
+                      setPoids(event.target.value)
+                    }
+                    placeholder="12000"
                     className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-base font-medium text-sky-950 outline-none focus:border-orange-500"
                   />
                 </div>
 
+                {/* Hauteur */}
                 <div className="flex flex-col gap-2">
                   <label
                     htmlFor="height"
@@ -158,12 +306,18 @@ export default function EditVehicleDrawer({
                   <input
                     id="height"
                     type="number"
-                    step="0.1"
-                    defaultValue={vehicle?.height || "3.5"}
+                    min="0"
+                    step="0.01"
+                    value={hauteur}
+                    onChange={(event) =>
+                      setHauteur(event.target.value)
+                    }
+                    placeholder="3.50"
                     className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-base font-medium text-sky-950 outline-none focus:border-orange-500"
                   />
                 </div>
 
+                {/* Largeur */}
                 <div className="flex flex-col gap-2">
                   <label
                     htmlFor="width"
@@ -175,8 +329,13 @@ export default function EditVehicleDrawer({
                   <input
                     id="width"
                     type="number"
-                    step="0.1"
-                    defaultValue={vehicle?.width || "2.4"}
+                    min="0"
+                    step="0.01"
+                    value={largeur}
+                    onChange={(event) =>
+                      setLargeur(event.target.value)
+                    }
+                    placeholder="2.50"
                     className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-base font-medium text-sky-950 outline-none focus:border-orange-500"
                   />
                 </div>
@@ -184,119 +343,140 @@ export default function EditVehicleDrawer({
             </section>
 
             {/* Statut actuel */}
-            <section className="flex flex-col gap-4">
-              <div className="flex items-center gap-2">
-                <span className="h-6 w-1.5 shrink-0 rounded-full bg-orange-500" />
+            {isEdit && (
+              <section className="flex flex-col gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="h-6 w-1.5 shrink-0 rounded-full bg-orange-500" />
 
-                <h3 className="text-sm font-bold uppercase leading-5 tracking-wider text-slate-400">
-                  Statut actuel
-                </h3>
-              </div>
+                  <h3 className="text-sm font-bold uppercase leading-5 tracking-wider text-slate-400">
+                    Statut actuel
+                  </h3>
+                </div>
 
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <label
-                  className={`flex cursor-pointer items-center gap-3 rounded-xl border-2 p-4 transition-colors ${
-                    status === "Disponible"
-                      ? "border-emerald-500 bg-emerald-50"
-                      : "border-slate-100 bg-white"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="status"
-                    value="Disponible"
-                    checked={status === "Disponible"}
-                    onChange={(event) => setStatus(event.target.value)}
-                    className="sr-only"
-                  />
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
 
-                  <span
-                    className={`flex size-4 items-center justify-center rounded-full border-2 ${
-                      status === "Disponible"
-                        ? "border-emerald-500"
-                        : "border-slate-300"
+                  {/* Disponible */}
+                  <label
+                    className={`flex cursor-pointer items-center gap-3 rounded-xl border-2 p-4 transition-colors ${
+                      status === "DISPONIBLE"
+                        ? "border-emerald-500 bg-emerald-50"
+                        : "border-slate-100 bg-white"
                     }`}
                   >
-                    {status === "Disponible" && (
-                      <span className="size-2 rounded-full bg-emerald-500" />
-                    )}
-                  </span>
+                    <input
+                      type="radio"
+                      name="status"
+                      value="DISPONIBLE"
+                      checked={
+                        status === "DISPONIBLE"
+                      }
+                      onChange={(event) =>
+                        setStatus(
+                          event.target.value
+                        )
+                      }
+                      className="sr-only"
+                    />
 
-                  <span
-                    className={`text-base font-bold leading-6 ${
-                      status === "Disponible"
-                        ? "text-slate-600"
-                        : "text-slate-400"
+                    <span
+                      className={`flex size-4 items-center justify-center rounded-full border-2 ${
+                        status === "DISPONIBLE"
+                          ? "border-emerald-500"
+                          : "border-slate-300"
+                      }`}
+                    >
+                      {status === "DISPONIBLE" && (
+                        <span className="size-2 rounded-full bg-emerald-500" />
+                      )}
+                    </span>
+
+                    <span
+                      className={`text-base font-bold leading-6 ${
+                        status === "DISPONIBLE"
+                          ? "text-slate-600"
+                          : "text-slate-400"
+                      }`}
+                    >
+                      Disponible
+                    </span>
+                  </label>
+
+                  {/* En panne */}
+                  <label
+                    className={`flex cursor-pointer items-center gap-3 rounded-xl border-2 p-4 transition-colors ${
+                      status === "EN_PANNE"
+                        ? "border-red-500 bg-red-50"
+                        : "border-slate-100 bg-white"
                     }`}
                   >
-                    Disponible
-                  </span>
-                </label>
+                    <input
+                      type="radio"
+                      name="status"
+                      value="EN_PANNE"
+                      checked={
+                        status === "EN_PANNE"
+                      }
+                      onChange={(event) =>
+                        setStatus(
+                          event.target.value
+                        )
+                      }
+                      className="sr-only"
+                    />
 
-                <label
-                  className={`flex cursor-pointer items-center gap-3 rounded-xl border-2 p-4 transition-colors ${
-                    status === "En panne"
-                      ? "border-red-500 bg-red-50"
-                      : "border-slate-100 bg-white"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="status"
-                    value="En panne"
-                    checked={status === "En panne"}
-                    onChange={(event) => setStatus(event.target.value)}
-                    className="sr-only"
-                  />
+                    <span
+                      className={`flex size-4 items-center justify-center rounded-full border-2 ${
+                        status === "EN_PANNE"
+                          ? "border-red-500"
+                          : "border-slate-300"
+                      }`}
+                    >
+                      {status === "EN_PANNE" && (
+                        <span className="size-2 rounded-full bg-red-500" />
+                      )}
+                    </span>
 
-                  <span
-                    className={`flex size-4 items-center justify-center rounded-full border-2 ${
-                      status === "En panne"
-                        ? "border-red-500"
-                        : "border-slate-300"
-                    }`}
-                  >
-                    {status === "En panne" && (
-                      <span className="size-2 rounded-full bg-red-500" />
-                    )}
-                  </span>
+                    <span
+                      className={`text-base font-bold leading-6 ${
+                        status === "EN_PANNE"
+                          ? "text-red-500"
+                          : "text-slate-400"
+                      }`}
+                    >
+                      En panne
+                    </span>
+                  </label>
+                </div>
 
-                  <span
-                    className={`text-base font-bold leading-6 ${
-                      status === "En panne"
-                        ? "text-red-500"
-                        : "text-slate-400"
-                    }`}
-                  >
-                    En panne
-                  </span>
-                </label>
-              </div>
+                {/* Information */}
+                <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-blue-400" />
 
-              {/* Information */}
-              <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
-                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-blue-400" />
-
-                <p className="text-xs font-medium leading-5 text-slate-500">
-                  Si le véhicule est assigné à un trajet, son statut passera
-                  automatiquement à{" "}
-                  <span className="font-bold text-cyan-800">
-                    En mission
-                  </span>
-                  .
-                </p>
-              </div>
-            </section>
+                  <p className="text-xs font-medium leading-5 text-slate-500">
+                    Si le véhicule est assigné à un trajet,
+                    son statut passera automatiquement à{" "}
+                    <span className="font-bold text-cyan-800">
+                      En mission
+                    </span>
+                    .
+                  </p>
+                </div>
+              </section>
+            )}
           </div>
         </div>
 
         {/* Footer */}
         <div className="flex shrink-0 flex-col gap-3 border-t border-slate-100 bg-slate-50/50 p-6 sm:p-8">
+
           <button
             type="button"
+            onClick={handleSubmit}
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 py-4 text-base font-bold leading-6 text-white shadow-sm transition-colors hover:bg-orange-600"
           >
-            Enregistrer les modifications
+            {isEdit
+              ? "Enregistrer les modifications"
+              : "Ajouter le véhicule"}
           </button>
 
           <button

@@ -20,9 +20,9 @@ export default function ManagersFilters({ search, onSearchChange, status, onStat
           onChange={(e) => onStatusChange(e.target.value)}
           className="w-full appearance-none rounded-xl bg-white px-4 py-3 pr-10 text-sm font-medium text-gray-900 outline outline-1 outline-offset-[-1px] outline-gray-200"
         >
-          <option>Tous les statuts</option>
-          <option>Actif</option>
-          <option>Désactivé</option>
+          <option value="Tous les statuts">Tous les statuts</option>
+          <option value="ACTIF">Actif</option>
+          <option value="DESACTIVE">Désactivé</option>
         </select>
         <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-3 w-3 -translate-y-1/2 text-gray-400" />
       </div>

@@ -1,10 +1,15 @@
 import {
   KeyRound,
   ShieldAlert,
-  Trash2,
+  ShieldCheck,
 } from "lucide-react";
 
-export default function AccountActionsCard({ status }) {
+export default function AccountActionsCard({
+  status,
+  onActivate,
+  onDeactivate,
+  onResetAccess,
+}) {
   const isDisabled = status === "Désactivé";
 
   return (
@@ -29,32 +34,37 @@ export default function AccountActionsCard({ status }) {
           </p>
         </div>
 
+        {/* Réinitialiser l'accès */}
         <button
           type="button"
+          onClick={onResetAccess}
           className="flex w-full items-center justify-center gap-3 rounded-xl border-2 border-cyan-800 px-6 py-4 text-base font-bold leading-6 text-cyan-800 transition-colors hover:bg-cyan-800/5"
         >
           <KeyRound className="h-4 w-4" />
           Réinitialiser l'accès
         </button>
 
-        <button
-          type="button"
-          disabled={isDisabled}
-          className="flex w-full items-center justify-center gap-3 rounded-xl border-2 border-red-700 px-6 py-4 text-base font-bold leading-6 text-red-700 transition-colors hover:bg-red-700/5 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <ShieldAlert className="h-4 w-4" />
-          {isDisabled ? "Compte désactivé" : "Désactiver le compte"}
-        </button>
-
-        <div className="border-t border-gray-100 pt-4">
+        {/* Compte désactivé : on propose de l'activer */}
+        {isDisabled ? (
           <button
             type="button"
-            className="flex w-full items-center justify-center gap-3 rounded-xl px-6 py-3 text-base font-semibold leading-6 text-gray-400 transition-colors hover:text-red-600"
+            onClick={onActivate}
+            className="flex w-full items-center justify-center gap-3 rounded-xl border-2 border-green-600 px-6 py-4 text-base font-bold leading-6 text-green-600 transition-colors hover:bg-green-600/5"
           >
-            <Trash2 className="h-4 w-4" />
-            Supprimer définitivement
+            <ShieldCheck className="h-4 w-4" />
+            Activer le compte
           </button>
-        </div>
+        ) : (
+          /* Compte actif : on propose de le désactiver */
+          <button
+            type="button"
+            onClick={onDeactivate}
+            className="flex w-full items-center justify-center gap-3 rounded-xl border-2 border-red-700 px-6 py-4 text-base font-bold leading-6 text-red-700 transition-colors hover:bg-red-700/5"
+          >
+            <ShieldAlert className="h-4 w-4" />
+            Désactiver le compte
+          </button>
+        )}
       </div>
     </section>
   );

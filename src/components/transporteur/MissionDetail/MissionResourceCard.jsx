@@ -4,15 +4,18 @@ export default function MissionResourceCard({
   type,
   label,
   name,
-  description,
-  status,
   image,
 }) {
+  // Permet de savoir si la ressource est un véhicule
+  // ou un agent.
   const isVehicle = type === "vehicle";
 
   return (
     <div className="flex min-w-0 items-center justify-between gap-4 rounded-xl border border-slate-100 bg-slate-50 p-5">
       <div className="flex min-w-0 items-center gap-4">
+        {/* Photo de l'agent si elle existe.
+            Pour un véhicule, il n'y a pas de photo :
+            on affiche donc l'icône. */}
         {image ? (
           <img
             className="size-12 shrink-0 rounded-lg border border-white"
@@ -30,23 +33,19 @@ export default function MissionResourceCard({
         )}
 
         <div className="min-w-0">
+          {/* Type de ressource */}
           <div className="mb-0.5 text-[10px] font-bold uppercase leading-4 tracking-wide text-slate-400">
             {label}
           </div>
 
+          {/* Nom ou immatriculation */}
           <div className="truncate text-base font-bold leading-6 text-sky-950">
-            {name}
+            {name || ""}
           </div>
 
-          <div className="truncate text-xs font-medium leading-4 tracking-tight text-slate-500">
-            {description}
-          </div>
         </div>
       </div>
-
-      <span className="shrink-0 rounded-full border border-cyan-800/20 bg-cyan-800/10 px-3 py-1 text-[10px] font-bold uppercase leading-4 tracking-tight text-cyan-800">
-        {status}
-      </span>
     </div>
   );
 }
+

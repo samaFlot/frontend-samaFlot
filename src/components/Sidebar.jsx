@@ -1,12 +1,63 @@
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 
+import logo from "../assets/logo.png";
+
+import { useProfil } from "../hooks/useProfil";
+
 function Sidebar({ items }) {
+  // Profil de l'utilisateur connecté
+  const {
+    profil,
+    chargerProfil,
+  } = useProfil();
+
+  // État local pour éviter d'afficher
+  // une image cassée si aucune photo n'existe.
+  const [photo, setPhoto] = useState("https://placehold.co/40x40");
+
+  // ----------------------------------------------------------
+  // Charger le profil de l'utilisateur connecté
+  // ----------------------------------------------------------
+
+  useEffect(() => {
+    chargerProfil();
+  }, []);
+
+  // ----------------------------------------------------------
+  // Préparer le nom et la photo
+  // ----------------------------------------------------------
+
+  // Construire le nom complet
+  const nomUtilisateur = [
+    profil?.first_name,
+    profil?.last_name,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  // Si le prénom et le nom sont vides,
+  // on utilise l'email comme solution de secours.
+  const nomAffiche =
+    nomUtilisateur ||
+    profil?.email ||
+    "Utilisateur";
+
+  // Mettre à jour la photo lorsque le profil est chargé.
+  useEffect(() => {
+    if (profil?.photo) {
+      setPhoto(profil.photo);
+    } else {
+      setPhoto("https://placehold.co/40x40");
+    }
+  }, [profil]);
+
   return (
     <aside className="fixed inset-y-0 left-0 z-40 flex h-screen w-64 shrink-0 flex-col justify-between bg-sky-950">
       <div className="flex w-full items-center gap-3 p-8">
         <img
           className="h-14 w-auto"
-          src="https://placehold.co/180x53?text=SamaFlot"
+          src={logo}
           alt="SamaFlot"
         />
       </div>
@@ -16,8 +67,8 @@ function Sidebar({ items }) {
           <NavLink
             key={label}
             to={path}
-            //Sans end, React Router considère que /admin est toujours actif meme si on est sur /admin/responsables
-            // donc on lui dit: considère ce lien actif seulement si on est arrivé exactement à cette route.
+            // Sans end, React Router considère que /admin
+            // est toujours actif même sur /admin/responsables.
             end={end}
             className={({ isActive }) =>
               `flex items-center gap-3 rounded-lg px-4 py-3 transition-colors ${
@@ -31,7 +82,9 @@ function Sidebar({ items }) {
               <>
                 <Icon
                   className={`h-4 w-4 ${
-                    isActive ? "text-white" : "text-gray-400"
+                    isActive
+                      ? "text-white"
+                      : "text-gray-400"
                   }`}
                 />
 
@@ -46,14 +99,16 @@ function Sidebar({ items }) {
 
       <div className="w-full border-t border-white/10 p-6">
         <div className="flex items-center gap-3 rounded-2xl p-3">
+          {/* Photo de l'utilisateur connecté */}
           <img
             className="size-10 shrink-0 rounded-full border-2 border-cyan-800"
-            src="https://placehold.co/40x40"
-            alt="Moussa Diop"
+            src={photo}
+            alt={nomAffiche}
           />
 
+          {/* Nom de l'utilisateur connecté */}
           <span className="truncate text-sm font-semibold tracking-tight text-white">
-            Moussa Diop
+            {nomAffiche}
           </span>
         </div>
       </div>
@@ -62,3 +117,4 @@ function Sidebar({ items }) {
 }
 
 export default Sidebar;
+

@@ -1,9 +1,12 @@
+
+import login  from "../../assets/login.png"
+import logo  from "../../assets/logo.png"
 export default function LoginBrandPanel() {
   return (
     <section className="relative hidden min-h-screen flex-1 overflow-hidden bg-sky-950 lg:flex">
       {/* Image */}
       <img
-        src="https://placehold.co/672x800"
+        src={login}
         alt=""
         className="absolute inset-0 h-full w-full object-cover"
       />
@@ -15,7 +18,7 @@ export default function LoginBrandPanel() {
       <div className="relative z-10 flex h-full w-full flex-col items-center justify-center px-10 py-16 text-center">
         <div className="flex flex-col items-center gap-4">
           <img
-            src="https://placehold.co/196x49"
+            src={logo}
             alt="SamaFlott"
             className="h-auto w-48"
           />

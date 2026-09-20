@@ -7,10 +7,93 @@ import {
   Truck,
 } from "lucide-react";
 
-import MissionResourceCard from "./MissionResourceCard";
-import MissionInstructions from "./MissionInstructions";
+import { Link } from "react-router-dom";
 
-export default function MissionInfoCard() {
+import MissionResourceCard from "./MissionResourceCard";
+
+export default function MissionInfoCard({ mission }) {
+  // Si la mission n'est pas encore chargée,
+  // on n'affiche pas la carte.
+  if (!mission) {
+    return null;
+  }
+
+  // Récupérer les objets imbriqués de la réponse API
+  const demande = mission.demande_chargement;
+  const vehicule = mission.vehicule;
+  const agent = mission.agent;
+
+  // ----------------------------------------------------------
+  // Informations de la demande
+  // ----------------------------------------------------------
+
+  const demandeur = demande?.demandeur || "";
+
+  const pointDepart =
+    demande?.point_depart || "";
+
+  const destination =
+    demande?.destination || "";
+
+  // ----------------------------------------------------------
+  // Date de chargement
+  // ----------------------------------------------------------
+
+  let dateChargement = "";
+
+  if (demande?.date_chargement) {
+    const date = new Date(
+      `${demande.date_chargement}T00:00:00`
+    );
+
+    if (!Number.isNaN(date.getTime())) {
+      dateChargement = date.toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      });
+    }
+  }
+
+  // ----------------------------------------------------------
+  // Heure de chargement
+  // ----------------------------------------------------------
+
+  const heureChargement =
+    demande?.heure_chargement
+      ? demande.heure_chargement.slice(0, 5)
+      : "—";
+
+  // ----------------------------------------------------------
+  // Véhicule
+  // ----------------------------------------------------------
+
+  const immatriculation =
+    vehicule?.immatriculation || "";
+
+  // ----------------------------------------------------------
+  // Agent
+  // ----------------------------------------------------------
+
+  const nomAgent = [
+    agent?.prenom,
+    agent?.nom,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const agentNom = nomAgent || "";
+
+  const agentPhoto =
+    agent?.photo || "https://placehold.co/48x48";
+
+  // ----------------------------------------------------------
+  // ID de la demande liée
+  // ----------------------------------------------------------
+
+  const demandeChargementId =
+    demande?.id;
+
   return (
     <section className="w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
       {/* Header */}
@@ -25,46 +108,75 @@ export default function MissionInfoCard() {
           </h2>
         </div>
 
-        <button
-          type="button"
-          className="flex items-center gap-2 text-sm font-bold leading-5 text-cyan-800"
-        >
-          <span>Voir la demande de chargement liée</span>
-          <ExternalLink className="size-3" />
-        </button>
+        {/* Lien vers la demande de chargement liée */}
+        {demandeChargementId ? (
+          <Link
+            to={`/transporteur/demandes-chargement/${demandeChargementId}`}
+            className="flex items-center gap-2 text-sm font-bold leading-5 text-cyan-800"
+          >
+            <span>
+              Voir la demande liée
+            </span>
+
+            <ExternalLink className="size-3" />
+          </Link>
+        ) : (
+          <span className="flex items-center gap-2 text-sm font-bold leading-5 text-slate-400">
+            <span>
+              Voir la demande de chargement liée
+            </span>
+
+            <ExternalLink className="size-3" />
+          </span>
+        )}
       </div>
 
       {/* Informations générales */}
       <div className="flex flex-col gap-10 p-6 sm:p-8">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {/* Demandeur */}
           <MissionField
             label="Demandeur"
-            icon={<Building2 className="size-3.5 text-cyan-800/60" />}
-            value="Grands Moulins de Dakar"
+            icon={
+              <Building2 className="size-3.5 text-cyan-800/60" />
+            }
+            value={demandeur}
           />
 
+          {/* Point de départ */}
           <MissionField
             label="Point de départ"
-            icon={<MapPin className="size-3.5 text-red-500/70" />}
-            value="Dakar, Port"
+            icon={
+              <MapPin className="size-3.5 text-red-500/70" />
+            }
+            value={pointDepart}
           />
 
+          {/* Destination */}
           <MissionField
             label="Destination"
-            icon={<MapPin className="size-3.5 text-emerald-500" />}
-            value="Thiès, Centre"
+            icon={
+              <MapPin className="size-3.5 text-emerald-500" />
+            }
+            value={destination}
           />
 
+          {/* Date de chargement */}
           <MissionField
             label="Date de chargement"
-            icon={<CalendarDays className="size-3.5 text-cyan-800/60" />}
-            value="24 Octobre 2023"
+            icon={
+              <CalendarDays className="size-3.5 text-cyan-800/60" />
+            }
+            value={dateChargement}
           />
 
+          {/* Heure de chargement */}
           <MissionField
             label="Heure de chargement"
-            icon={<Clock3 className="size-3.5 text-cyan-800/60" />}
-            value="08:00 AM"
+            icon={
+              <Clock3 className="size-3.5 text-cyan-800/60" />
+            }
+            value={heureChargement}
           />
         </div>
 
@@ -72,27 +184,22 @@ export default function MissionInfoCard() {
 
         {/* Ressources */}
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+          {/* Véhicule affecté */}
           <MissionResourceCard
             type="vehicle"
             label="Véhicule affecté"
-            name="DK-1234-AB"
-            description="Renault Kerax - Plateau (35T)"
-            status="En mission"
+            name={immatriculation}
           />
 
+          {/* Agent affecté */}
           <MissionResourceCard
             type="agent"
             label="Agent affecté"
-            name="Modou Fall"
-            description="Chauffeur poids lourd - Exp. 8 ans"
-            status="Indisponible"
-            image="https://placehold.co/48x48"
+            name={agentNom}
+            image={agentPhoto}
           />
         </div>
       </div>
-
-      {/* Instructions */}
-      <MissionInstructions />
     </section>
   );
 }
@@ -114,3 +221,4 @@ function MissionField({ label, icon, value }) {
     </div>
   );
 }
+

@@ -5,8 +5,6 @@ export default function VehicleFilters({
   onSearchChange,
   status,
   onStatusChange,
-  type,
-  onTypeChange,
   onClear,
 }) {
   return (
@@ -31,28 +29,21 @@ export default function VehicleFilters({
           onChange={(event) => onStatusChange(event.target.value)}
           className="w-full appearance-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 pr-10 text-sm text-gray-900 outline-none focus:border-orange-500"
         >
-          <option>Tous les statuts</option>
-          <option>Disponible</option>
-          <option>En mission</option>
-          <option>En panne</option>
-        </select>
+          <option value="Tous les statuts">
+            Tous les statuts
+          </option>
 
-        <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-      </div>
+          <option value="DISPONIBLE">
+            Disponible
+          </option>
 
-      {/* Type */}
-      <div className="relative w-full lg:w-48">
-        <select
-          value={type}
-          onChange={(event) => onTypeChange(event.target.value)}
-          className="w-full appearance-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 pr-10 text-sm text-gray-900 outline-none focus:border-orange-500"
-        >
-          <option>Tous les types</option>
-          <option>Semi-remorque</option>
-          <option>Plateau</option>
-          <option>Porteur</option>
-          <option>Citerne</option>
-          <option>Frigorifique</option>
+          <option value="EN_MISSION">
+            En mission
+          </option>
+
+          <option value="EN_PANNE">
+            En panne
+          </option>
         </select>
 
         <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />

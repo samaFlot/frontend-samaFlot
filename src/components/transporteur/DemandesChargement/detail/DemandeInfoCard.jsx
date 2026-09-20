@@ -6,7 +6,35 @@ import {
   User,
 } from "lucide-react";
 
-export default function DemandeInfoCard() {
+export default function DemandeInfoCard({ demande }) {
+  if (!demande) {
+    return null;
+  }
+
+  const {
+    demandeur,
+    nombre_vehicules_demandes,
+    date_chargement,
+    heure_chargement,
+    point_depart,
+    destination,
+    description,
+  } = demande;
+
+  // Formater la date pour l'affichage
+  const dateFormatee = new Date(
+    `${date_chargement}T00:00:00`
+  ).toLocaleDateString("fr-FR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
+  // Afficher uniquement heures et minutes
+  const heureFormatee = heure_chargement
+    ? heure_chargement.slice(0, 5)
+    : "-";
+
   return (
     <section className="w-full overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-100">
       {/* Header */}
@@ -23,10 +51,11 @@ export default function DemandeInfoCard() {
 
         {/* Première ligne : 3 colonnes */}
         <div className="grid w-full grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-3">
+
           <InfoRow
             label="Demandeur"
             icon={<User className="size-4 text-slate-400" />}
-            value="Grands Moulins de Dakar"
+            value={demandeur}
           />
 
           <div className="flex flex-col gap-1.5">
@@ -36,11 +65,10 @@ export default function DemandeInfoCard() {
 
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-sm font-semibold text-slate-800">
-                2 véhicules
-              </span>
-
-              <span className="rounded-sm bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-tight text-slate-600">
-                Type: 35T
+                {nombre_vehicules_demandes}{" "}
+                {nombre_vehicules_demandes > 1
+                  ? "véhicules"
+                  : "véhicule"}
               </span>
             </div>
           </div>
@@ -48,28 +76,29 @@ export default function DemandeInfoCard() {
           <InfoRow
             label="Date de chargement"
             icon={<CalendarDays className="size-4 text-slate-400" />}
-            value="24 Oct 2023"
+            value={dateFormatee}
           />
         </div>
 
         {/* Deuxième ligne : 3 colonnes */}
         <div className="mt-5 grid w-full grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-3">
+
           <InfoRow
             label="Heure de chargement"
             icon={<Clock3 className="size-4 text-slate-400" />}
-            value="08:00"
+            value={heureFormatee}
           />
 
           <InfoRow
             label="Point de départ"
             icon={<MapPin className="size-4 text-red-500" />}
-            value="Dakar, Port"
+            value={point_depart}
           />
 
           <InfoRow
             label="Destination"
             icon={<MapPin className="size-4 text-emerald-500" />}
-            value="Thiès, Centre"
+            value={destination}
           />
         </div>
 
@@ -80,11 +109,7 @@ export default function DemandeInfoCard() {
           </div>
 
           <p className="max-w-4xl text-sm leading-6 text-slate-600">
-            Transport de 50 tonnes de farine réparties sur deux camions.
-            Chargement au quai N°4 des Grands Moulins de Dakar. La livraison
-            doit être effectuée au dépôt central de Thiès avant 17h00. Les
-            chauffeurs doivent être munis de leurs EPI complets. Escorte non
-            requise mais suivi GPS activé obligatoire.
+            {description || "Aucune description fournie."}
           </p>
         </div>
       </div>
@@ -103,7 +128,7 @@ function InfoRow({ label, icon, value }) {
         {icon}
 
         <span className="text-sm font-semibold text-slate-800">
-          {value}
+          {value || "-"}
         </span>
       </div>
     </div>

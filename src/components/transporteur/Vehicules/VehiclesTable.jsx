@@ -1,7 +1,15 @@
 import { Pencil, Trash2 } from "lucide-react";
+import Pagination from "../Pagination";
 
-export default function VehiclesTable({ vehicles, onEdit }) {
+
+export default function VehiclesTable({
+  vehicles,
+  onEdit,
+  onDelete,
+  pagination,
+}) {
   return (
+    <section className="w-full overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-100">
     <div className="w-full overflow-x-auto">
       <div className="min-w-[900px]">
         {/* Header */}
@@ -35,27 +43,33 @@ export default function VehiclesTable({ vehicles, onEdit }) {
               index > 0 ? "border-t border-slate-100" : ""
             }`}
           >
+            {/* Immatriculation */}
             <div className="px-6 py-4 text-base font-bold leading-6 text-sky-950">
-              {vehicle.registration}
+              {vehicle.immatriculation}
             </div>
 
+            {/* Type */}
             <div className="px-6 py-4 text-sm leading-5 text-slate-600">
-              {vehicle.type}
+              {vehicle.type_vehicule}
             </div>
 
+            {/* Caractéristiques */}
             <div className="px-6 py-4 text-sm leading-5 text-slate-500">
-              {vehicle.characteristics}
+              {vehicle.poids} kg / {vehicle.hauteur} m /{" "}
+              {vehicle.largeur} m
             </div>
 
+            {/* Statut */}
             <div className="px-6 py-4">
-              <StatusBadge status={vehicle.status} />
+              <StatusBadge status={vehicle.statut} />
             </div>
 
+            {/* Actions */}
             <div className="flex justify-end gap-3 px-6 py-4">
               <button
                 type="button"
                 onClick={() => onEdit(vehicle)}
-                aria-label={`Modifier ${vehicle.registration}`}
+                aria-label={`Modifier ${vehicle.immatriculation}`}
                 className="flex size-8 items-center justify-center text-slate-400 transition-colors hover:text-sky-950"
               >
                 <Pencil className="h-4 w-4" />
@@ -63,7 +77,8 @@ export default function VehiclesTable({ vehicles, onEdit }) {
 
               <button
                 type="button"
-                aria-label={`Supprimer ${vehicle.registration}`}
+                onClick={() => onDelete(vehicle.id)}
+                aria-label={`Supprimer ${vehicle.immatriculation}`}
                 className="flex size-8 items-center justify-center text-slate-400 transition-colors hover:text-red-500"
               >
                 <Trash2 className="h-4 w-4" />
@@ -79,14 +94,33 @@ export default function VehiclesTable({ vehicles, onEdit }) {
         )}
       </div>
     </div>
+    {/* Pagination */}
+          {pagination && (
+            <Pagination
+              page={pagination.page}
+              totalPages={pagination.totalPages}
+              totalItems={pagination.totalItems}
+              debut={pagination.debut}
+              fin={pagination.fin}
+              onPageChange={pagination.onPageChange}
+              libelle="vehicules"
+            />
+          )}
+    </section>
   );
 }
 
 function StatusBadge({ status }) {
   const styles = {
-    Disponible: "bg-emerald-50 text-emerald-500",
-    "En mission": "bg-blue-50 text-cyan-800",
-    "En panne": "bg-red-50 text-red-500",
+    DISPONIBLE: "bg-emerald-50 text-emerald-500",
+    EN_MISSION: "bg-blue-50 text-cyan-800",
+    EN_PANNE: "bg-red-50 text-red-500",
+  };
+
+  const labels = {
+    DISPONIBLE: "Disponible",
+    EN_MISSION: "En mission",
+    EN_PANNE: "En panne",
   };
 
   return (
@@ -95,7 +129,7 @@ function StatusBadge({ status }) {
         styles[status] || "bg-slate-50 text-slate-500"
       }`}
     >
-      {status}
+      {labels[status] || status}
     </span>
   );
 }

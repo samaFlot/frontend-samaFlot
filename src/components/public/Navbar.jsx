@@ -3,7 +3,7 @@
 /* ------------------------------------------------------------------ */
 
 import { ChevronDown, ShieldCheck, UserRound } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import logo from "../../assets/logo.png"
 
@@ -29,7 +29,13 @@ const NAV_LINKS = [
 export default function Navbar() {
   //Hook de React Router qui permet de connaître l’URL actuelle de l’utilisateur dans ton application
   const location = useLocation();
-  const [open, setOpen] = useState(false);
+  //const [open, setOpen] = useState(false);
+  const navigate= useNavigate()
+
+  const openLogin=()=>{
+    navigate('/login');
+  }
+
  
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/95 backdrop-blur-md">
@@ -67,17 +73,18 @@ export default function Navbar() {
         <div className="relative">
           <button
             type="button"
-            onClick={() => setOpen((v) => !v)}
+            //onClick={() => setOpen((v) => !v)}
+            onClick={openLogin}
             className="flex items-center gap-2 rounded-xl px-6 py-2.5 outline outline-2 outline-offset-[-2px] outline-sky-950 transition-colors hover:bg-sky-950 hover:text-white"
           >
-            <span className="text-base font-bold">Se connecter</span>
-            <ChevronDown
+           <span className="text-base font-bold">Se connecter</span>
+             {/*<ChevronDown
               className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`}
               strokeWidth={3}
-            />
+            />*/}
           </button>
  
-          {open && (
+          {/*{open && (
             <div className="absolute right-0 top-[calc(100%+8px)] w-64 overflow-hidden rounded-xl bg-white shadow-2xl outline outline-1 outline-offset-[-1px] outline-gray-100">
               <a
                 href="#"
@@ -112,7 +119,7 @@ export default function Navbar() {
                 </span>
               </a>
             </div>
-          )}
+          )}*/}
         </div>
       </div>
     </header>

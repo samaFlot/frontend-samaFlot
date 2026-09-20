@@ -1,27 +1,12 @@
-const MISSIONS = [
-  {
-    requester: "SODEFITEX",
-    destination: "Kaolack",
-    status: "En cours",
-  },
-  {
-    requester: "Suneor",
-    destination: "Diourbel",
-    status: "En cours",
-  },
-  {
-    requester: "Eiffage Sénégal",
-    destination: "Dakar - Diamniadio",
-    status: "En cours",
-  },
-  {
-    requester: "ICS Mbao",
-    destination: "Mbour",
-    status: "En cours",
-  },
-];
+export default function MissionsCard({
+  missions,
+  loading,
+}) {
+  // Garde uniquement les missions actuellement en cours.
+  const missionsEnCours = missions.filter(
+    (mission) => mission.statut === "EN_COURS"
+  );
 
-export default function MissionsCard() {
   return (
     <section className="w-full overflow-hidden rounded-xl border border-slate-100 bg-white shadow-sm">
       <div className="flex items-center justify-between gap-4 border-b border-slate-100 px-6 py-4">
@@ -53,28 +38,40 @@ export default function MissionsCard() {
             </div>
           </div>
 
-          {MISSIONS.map((mission, index) => (
-            <div
-              key={mission.requester}
-              className={`grid grid-cols-[1.2fr_1.4fr_0.9fr] items-center ${
-                index > 0 ? "border-t border-slate-100" : ""
-              }`}
-            >
-              <div className="px-6 py-4 text-sm font-medium tracking-tight text-gray-900">
-                {mission.requester}
-              </div>
-
-              <div className="px-6 py-4 text-sm tracking-tight text-slate-600">
-                {mission.destination}
-              </div>
-
-              <div className="px-6 py-4">
-                <span className="inline-flex rounded-full bg-cyan-800/10 px-3 py-1 text-xs font-bold text-cyan-800">
-                  {mission.status}
-                </span>
-              </div>
+          {loading ? (
+            <div className="px-6 py-8 text-center text-sm text-slate-400">
+              Chargement des missions...
             </div>
-          ))}
+          ) : missionsEnCours.length === 0 ? (
+            <div className="px-6 py-8 text-center text-sm text-slate-400">
+              Aucune mission en cours.
+            </div>
+          ) : (
+            missionsEnCours.map((mission, index) => (
+              <div
+                key={mission.id}
+                className={`grid grid-cols-[1.2fr_1.4fr_0.9fr] items-center ${
+                  index > 0
+                    ? "border-t border-slate-100"
+                    : ""
+                }`}
+              >
+                <div className="px-6 py-4 text-sm font-medium tracking-tight text-gray-900">
+                  {mission.demandeur}
+                </div>
+
+                <div className="px-6 py-4 text-sm tracking-tight text-slate-600">
+                  {mission.destination}
+                </div>
+
+                <div className="px-6 py-4">
+                  <span className="inline-flex rounded-full bg-cyan-800/10 px-3 py-1 text-xs font-bold text-cyan-800">
+                    En cours
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </section>
