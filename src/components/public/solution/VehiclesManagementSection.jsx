@@ -1,8 +1,8 @@
-import image6 from "../../../../src/assets/solution/image6.png"
+import image67 from "../../../../src/assets/solution/image67.png"
 const VEHICLES_CONTENT = {
   title: "Gestion des véhicules et des agents",
   text: "Centralisez l'intégralité de vos ressources sur un tableau de bord unique. Suivez en temps réel la disponibilité de vos camions et le statut de vos chauffeurs : Disponible, En Mission, ou En Panne. Anticipez les maintenances et gérez les documents administratifs sans effort.",
-  image: image6,
+  image: image67,
 };
 
 export default function VehiclesManagementSection() {

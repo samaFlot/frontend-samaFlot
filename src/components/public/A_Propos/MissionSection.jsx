@@ -1,4 +1,5 @@
 import { Fragment } from "react";
+import image66 from "../../../../src/assets/solution/image66.png"
 
 const MISSION_STATS = [
   { value: "100%", label: "Digitalisé" },
@@ -9,10 +10,10 @@ export default function MissionSection() {
   return (
     <section className="w-full bg-white px-6 py-24 lg:px-20">
       <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-12 lg:flex-row lg:gap-20">
-        <div className="flex-1 overflow-hidden rounded-3xl shadow-2xl">
+        <div className="flex-1 overflow-hidden rounded-3xl">
           <img
             className="h-[500px] w-full object-cover"
-            src="https://placehold.co/568x500"
+            src={image66}
             alt="Notre mission"
           />
         </div>

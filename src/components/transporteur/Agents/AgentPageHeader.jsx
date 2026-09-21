@@ -1,6 +1,7 @@
 import { UserPlus, Bell } from "lucide-react";
 import { useProfil } from "../../../hooks/useProfil";
 import { useEffect, useState } from "react";
+import NotificationsButton from "../notifications/NotificationsButton";
 
 export default function AgentPageHeader({ onAddClick }) {
   // Profil de l'utilisateur connecté
@@ -45,15 +46,7 @@ export default function AgentPageHeader({ onAddClick }) {
           <span>Ajouter un agent</span>
         </button>
 
-        <button
-          type="button"
-          className="relative flex size-8 items-center justify-center"
-          aria-label="Notifications"
-        >
-          <Bell className="size-5 text-slate-400" />
-
-          <span className="absolute right-0 top-0 size-2.5 rounded-full border-2 border-white bg-orange-500" />
-        </button>
+        <NotificationsButton />
 
         <div className="hidden h-8 w-px bg-slate-200 sm:block" />
 

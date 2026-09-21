@@ -1,13 +1,17 @@
+import image66 from "../../../../src/assets/solution/image66.png"
+import image67 from "../../../../src/assets/solution/image67.png"
+import image68 from "../../../../src/assets/solution/image68.png"
+import image1 from "../../../../src/assets/solution/image1.png"
 const LOCAL_STATS = [
   { value: "50+", label: "Partenaires locaux" },
   { value: "24/7", label: "Support Technique" },
 ];
 
 const GALLERY_IMAGES = [
-  { src: "https://placehold.co/255x256", tall: false },
-  { src: "https://placehold.co/255x320", tall: true },
-  { src: "https://placehold.co/255x320", tall: true, offset: true },
-  { src: "https://placehold.co/255x256", tall: false, offset: true },
+  { src: image67, tall: false },
+  { src: image66, tall: true },
+  { src: image68, tall: true, offset: true },
+  { src: image67, tall: false, offset: true },
 ];
 
 export default function LocalContextSection() {

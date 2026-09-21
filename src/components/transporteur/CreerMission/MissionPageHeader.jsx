@@ -5,6 +5,7 @@ import {
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useProfil } from "../../../hooks/useProfil";
+import NotificationsButton from "../notifications/NotificationsButton";
 
 export default function MissionPageHeader({id}) {
     // Profil de l'utilisateur connecté
@@ -51,15 +52,7 @@ export default function MissionPageHeader({id}) {
       </div>
 
       <div className="flex shrink-0 items-center gap-4 sm:gap-6">
-        <button
-          type="button"
-          className="relative flex size-8 items-center justify-center"
-          aria-label="Notifications"
-        >
-          <Bell className="size-5 text-slate-400" />
-
-          <span className="absolute right-0 top-0 size-2.5 rounded-full border-2 border-white bg-orange-500" />
-        </button>
+        <NotificationsButton />
 
         <div className="hidden h-8 w-px bg-slate-200 sm:block" />
 
