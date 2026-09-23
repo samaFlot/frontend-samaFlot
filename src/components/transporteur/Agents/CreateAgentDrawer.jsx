@@ -68,35 +68,96 @@ export default function CreateAgentDrawer({
 };
 
   // Envoyer le formulaire
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
   setError("");
 
+  // Nettoyer les espaces inutiles
+  const nomAgent = nom.trim();
+  const prenomAgent = prenom.trim();
+  const telephoneAgent = telephone.trim();
+  const adresseAgent = adresse.trim();
+  const emailAgent = email.trim();
+  const permisAgent = numeroPermis.trim();
+  const categorieAgent = categoriePermis.trim();
+
   // Vérifier les champs obligatoires
   if (
-    !nom.trim() ||
-    !prenom.trim() ||
-    !telephone.trim() ||
-    !adresse.trim() ||
-    !email.trim()
+    !nomAgent ||
+    !prenomAgent ||
+    !telephoneAgent ||
+    !adresseAgent ||
+    !emailAgent
   ) {
     setError("Veuillez remplir tous les champs obligatoires.");
     return;
   }
 
+  // Vérifier le nom et le prénom
+  const nomRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/;
+
+  if (!nomRegex.test(nomAgent)) {
+    setError("Le nom contient des caractères invalides.");
+    return;
+  }
+
+  if (!nomRegex.test(prenomAgent)) {
+    setError("Le prénom contient des caractères invalides.");
+    return;
+  }
+
+  // Vérifier le téléphone sénégalais
+  // Accepte par exemple : 77 000 00 00 ou 770000000
+  const telephoneNettoye = telephoneAgent.replace(/\s/g, "");
+
+  const telephoneRegex = /^(70|75|76|77|78)\d{7}$/;
+
+  if (!telephoneRegex.test(telephoneNettoye)) {
+    setError(
+      "Veuillez saisir un numéro de téléphone valide (ex : 77 000 00 00)."
+    );
+    return;
+  }
+
+  // Vérifier l'email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  if (!emailRegex.test(emailAgent)) {
+    setError("Veuillez saisir une adresse email valide.");
+    return;
+  }
+
+  // Vérifier l'adresse
+  if (adresseAgent.length < 2) {
+    setError("Veuillez saisir une adresse valide.");
+    return;
+  }
+
+  // Vérifier le numéro de permis s'il est renseigné
+  if (permisAgent && permisAgent.length < 3) {
+    setError("Le numéro de permis doit contenir au moins 3 caractères.");
+    return;
+  }
+
+  // Vérifier la catégorie du permis si elle est renseignée
+  if (categorieAgent && categorieAgent.length < 1) {
+    setError("Veuillez saisir une catégorie de permis valide.");
+    return;
+  }
+
   // FormData au lieu d'un objet JSON pour pouvoir envoyer le fichier
   const donnees = new FormData();
-  donnees.append("nom", nom.trim());
-  donnees.append("prenom", prenom.trim());
-  donnees.append("telephone", telephone.trim());
-  donnees.append("adresse", adresse.trim());
-  donnees.append("email", email.trim());
-  donnees.append("numero_permis", numeroPermis.trim());
-  donnees.append("categorie_permis", categoriePermis.trim());
+  donnees.append("nom", nomAgent);
+  donnees.append("prenom", prenomAgent);
+  donnees.append("telephone", telephoneNettoye);
+  donnees.append("adresse", adresseAgent);
+  donnees.append("email", emailAgent);
+  donnees.append("numero_permis", permisAgent);
+  donnees.append("categorie_permis", categorieAgent);
 
   // La photo n'est ajoutée que si l'utilisateur en a choisi une
   if (photo) {
-    donnees.append("photo", photo); // "photo" = nom du champ côté Django
+    donnees.append("photo", photo);
   }
 
   try {
@@ -374,14 +435,6 @@ export default function CreateAgentDrawer({
         {/* Footer */}
         <div className="shrink-0 border-t border-slate-200 bg-slate-50 px-6 py-6 sm:px-8">
           <div className="flex flex-col gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={saving}
-              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Annuler
-            </button>
 
             <button
               type="submit"
@@ -394,6 +447,15 @@ export default function CreateAgentDrawer({
                 : isEdit
                   ? "Enregistrer les modifications"
                   : "Enregistrer l'agent"}
+            </button>
+
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={saving}
+              className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Annuler
             </button>
           </div>
         </div>

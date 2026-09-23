@@ -66,71 +66,91 @@ export default function EditVehicleDrawer({
 
   // Envoie le formulaire.
   const handleSubmit = async (event) => {
-    event.preventDefault();
+  event.preventDefault();
 
-    setError("");
+  setError("");
 
-    // Vérification des champs obligatoires.
-    if (!immatriculation.trim()) {
-      setError(
-        "Veuillez saisir l'immatriculation."
-      );
-      return;
-    }
+  const immatriculationVehicule = immatriculation.trim();
+  const typeVehiculeSaisi = typeVehicule.trim();
 
-    if (!typeVehicule.trim()) {
-      setError(
-        "Veuillez saisir le type de véhicule."
-      );
-      return;
-    }
+  if (!immatriculationVehicule) {
+    setError("Veuillez saisir l'immatriculation.");
+    return;
+  }
 
-    if (!poids) {
-      setError("Veuillez saisir le poids.");
-      return;
-    }
+  if (!typeVehiculeSaisi) {
+    setError("Veuillez saisir le type de véhicule.");
+    return;
+  }
 
-    if (!hauteur) {
-      setError("Veuillez saisir la hauteur.");
-      return;
-    }
+  if (!poids) {
+    setError("Veuillez saisir le poids.");
+    return;
+  }
 
-    if (!largeur) {
-      setError("Veuillez saisir la largeur.");
-      return;
-    }
+  if (!hauteur) {
+    setError("Veuillez saisir la hauteur.");
+    return;
+  }
 
-    // Données correspondant aux champs du backend.
-    const donnees = {
-      immatriculation: immatriculation.trim(),
-      type_vehicule: typeVehicule.trim(),
-      poids: poids,
-      hauteur: hauteur,
-      largeur: largeur,
-    };
+  if (!largeur) {
+    setError("Veuillez saisir la largeur.");
+    return;
+  }
 
-    if (isEdit) {
-      // En modification, on peut aussi modifier le statut.
-      donnees.statut = status;
+  if (typeVehiculeSaisi.length < 2) {
+    setError(
+      "Le type de véhicule doit contenir au moins 2 caractères."
+    );
+    return;
+  }
 
-      const resultat = await onUpdate(
-        vehicle.id,
-        donnees
-      );
+  const poidsNombre = Number(poids);
+  const hauteurNombre = Number(hauteur);
+  const largeurNombre = Number(largeur);
 
-      if (resultat) {
-        onClose();
-      }
-    } else {
-      // En création, on n'envoie pas le statut.
-      // Le backend met DISPONIBLE par défaut.
-      const resultat = await onAdd(donnees);
+  if (poidsNombre <= 0) {
+    setError("Le poids doit être un nombre supérieur à 0.");
+    return;
+  }
 
-      if (resultat) {
-        onClose();
-      }
-    }
+  if (hauteurNombre <= 0) {
+    setError("La hauteur doit être un nombre supérieur à 0.");
+    return;
+  }
+
+  if (largeurNombre <= 0) {
+    setError("La largeur doit être un nombre supérieur à 0.");
+    return;
+  }
+
+  const donnees = {
+    immatriculation: immatriculationVehicule,
+    type_vehicule: typeVehiculeSaisi,
+    poids: poids,
+    hauteur: hauteur,
+    largeur: largeur,
   };
+
+  if (isEdit) {
+    donnees.statut = status;
+
+    const resultat = await onUpdate(
+      vehicle.id,
+      donnees
+    );
+
+    if (resultat) {
+      onClose();
+    }
+  } else {
+    const resultat = await onAdd(donnees);
+
+    if (resultat) {
+      onClose();
+    }
+  }
+};
 
   if (!isOpen) {
     return null;
@@ -472,7 +492,7 @@ export default function EditVehicleDrawer({
           <button
             type="button"
             onClick={handleSubmit}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 py-4 text-base font-bold leading-6 text-white shadow-sm transition-colors hover:bg-orange-600"
+            className="w-full rounded-lg bg-orange-500 px-4 py-3 text-sm font-bold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isEdit
               ? "Enregistrer les modifications"
@@ -482,7 +502,7 @@ export default function EditVehicleDrawer({
           <button
             type="button"
             onClick={onClose}
-            className="w-full rounded-xl border border-slate-200 bg-white py-4 text-base font-bold leading-6 text-slate-500 transition-colors hover:bg-slate-50"
+            className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Annuler
           </button>

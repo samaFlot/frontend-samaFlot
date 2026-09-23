@@ -34,62 +34,118 @@ export default function CreateResponsableDrawer({
   }, [responsable, isOpen]);
 
   // Envoyer le formulaire
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
 
-    // Vérifier que tous les champs sont remplis
-    if (
-      !nomEntreprise.trim() ||
-      !prenom.trim() ||
-      !nom.trim() ||
-      !telephone.trim() ||
-      !email.trim() ||
-      !adresse.trim()
-    ) {
-      setError("Veuillez remplir tous les champs.");
-      return;
-    }
+  // Nettoyer les espaces inutiles
+  const entreprise = nomEntreprise.trim();
+  const prenomResponsable = prenom.trim();
+  const nomResponsable = nom.trim();
+  const telephoneResponsable = telephone.trim();
+  const emailResponsable = email.trim();
+  const adresseResponsable = adresse.trim();
 
-    // Les noms des champs sont ceux attendus par Django
-    const donnees = {
-      nom_entreprise: nomEntreprise.trim(),
-      prenom: prenom.trim(),
-      nom: nom.trim(),
-      telephone: telephone.trim(),
-      email: email.trim(),
-      adresse: adresse.trim(),
-    };
+  // Vérifier que tous les champs sont remplis
+  if (
+    !entreprise ||
+    !prenomResponsable ||
+    !nomResponsable ||
+    !telephoneResponsable ||
+    !emailResponsable ||
+    !adresseResponsable
+  ) {
+    setError("Veuillez remplir tous les champs.");
+    return;
+  }
 
-    try {
-      setSaving(true);
+  // Vérifier les noms et prénoms
+  const nomRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/;
 
-      if (isEdit) {
-        await onUpdate(responsable.id, donnees);
-      } else {
-        await onAdd(donnees);
-      }
-    } catch (err) {
-      const data = err?.response?.data;
+  if (!nomRegex.test(prenomResponsable)) {
+    setError("Le prénom contient des caractères invalides.");
+    return;
+  }
 
-      let message = "Une erreur est survenue lors de l'enregistrement.";
+  if (!nomRegex.test(nomResponsable)) {
+    setError("Le nom contient des caractères invalides.");
+    return;
+  }
 
-      if (data?.detail) {
-        message = data.detail;
-      } else if (data && typeof data === "object") {
-        // Ex: { email: ["Cet email est déjà utilisé."] }
-        message = Object.entries(data)
-          .map(([champ, erreurs]) =>
-            `${champ} : ${Array.isArray(erreurs) ? erreurs.join(" ") : erreurs}`
-          )
-          .join(" | ");
-      }
+  // Vérifier le nom de l'entreprise
+  if (entreprise.length < 2) {
+    setError("Le nom de l'entreprise doit contenir au moins 2 caractères.");
+    return;
+  }
 
-      setError(message);
-    } finally {
-      setSaving(false);
-    }
+  // Vérifier le téléphone sénégalais
+  // Accepte par exemple : 77 000 00 00 ou 770000000
+  const telephoneNettoye = telephoneResponsable.replace(/\s/g, "");
+
+  const telephoneRegex = /^(70|75|76|77|78)\d{7}$/;
+
+  if (!telephoneRegex.test(telephoneNettoye)) {
+    setError(
+      "Veuillez saisir un numéro de téléphone sénégalais valide (ex : 77 000 00 00)."
+    );
+    return;
+  }
+
+  // Vérifier l'email
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  if (!emailRegex.test(emailResponsable)) {
+    setError("Veuillez saisir une adresse email valide.");
+    return;
+  }
+
+  // Vérifier l'adresse
+  if (adresseResponsable.length < 2) {
+    setError("Veuillez saisir une adresse valide.");
+    return;
+  }
+
+  // Les noms des champs sont ceux attendus par Django
+  const donnees = {
+    nom_entreprise: entreprise,
+    prenom: prenomResponsable,
+    nom: nomResponsable,
+    telephone: telephoneNettoye,
+    email: emailResponsable,
+    adresse: adresseResponsable,
   };
+
+  try {
+    setSaving(true);
+
+    if (isEdit) {
+      await onUpdate(responsable.id, donnees);
+    } else {
+      await onAdd(donnees);
+    }
+  } catch (err) {
+    const data = err?.response?.data;
+
+    let message = "Une erreur est survenue lors de l'enregistrement.";
+
+    if (data?.detail) {
+      message = data.detail;
+    } else if (data && typeof data === "object") {
+      message = Object.entries(data)
+        .map(
+          ([champ, erreurs]) =>
+            `${champ} : ${
+              Array.isArray(erreurs) ? erreurs.join(" ") : erreurs
+            }`
+        )
+        .join(" | ");
+    }
+
+    setError(message);
+  } finally {
+    setSaving(false);
+  }
+};
 
   if (!isOpen) {
     return null;

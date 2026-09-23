@@ -20,6 +20,7 @@ import CreerMissionPage from "./pages/transporteur/CreerMissionPage";
 import MissionsPage from "./pages/transporteur/MissionsPage";
 import MissionDetailPage from "./pages/transporteur/MissionDetailPage";
 import ProfilPageTransporteur from "./pages/transporteur/ProfilPageTransporteur";
+import SuiviVehicules from "./pages/transporteur/SuiviVehicules";
 
 function AppRoutes() {
   return (
@@ -59,6 +60,7 @@ function AppRoutes() {
             <Route path="/transporteur/missions" element={<MissionsPage />} />
             <Route path="/transporteur/missions/:id" element={<MissionDetailPage />} />
             <Route path="/transporteur/profil" element={<ProfilPageTransporteur />} />
+            <Route path="/transporteur/suivi" element={<SuiviVehicules />} />
         </Route>
         <Route path="/login" element={<LoginPage />} />
     </Routes>
