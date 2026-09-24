@@ -94,8 +94,9 @@ export default function ResourceSelect({
               <div className="flex min-w-0 items-center gap-3">
                 <img
                   src={
-                    ressourceSelectionnee.photo ||
-                    "https://placehold.co/24x24"
+                    ressourceSelectionnee.photo
+                    ? `http://127.0.0.1:8000${ressourceSelectionnee.photo}`
+                    : "https://placehold.co/24x24"
                   }
                   alt={`${ressourceSelectionnee.prenom} ${ressourceSelectionnee.nom}`}
                   className="size-6 shrink-0 rounded-full object-cover"

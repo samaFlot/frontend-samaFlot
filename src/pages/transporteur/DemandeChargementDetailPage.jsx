@@ -19,6 +19,16 @@ export default function DemandeChargementDetailPage() {
     annulerDemande,
   } = useDemandesChargement();
 
+  console.log(
+  "DEMANDE CHARGEMENT :",
+  demandeChargement
+);
+
+console.log(
+  "MISSIONS :",
+  demandeChargement?.missions
+);
+
   // Charger les informations de la demande
   // lorsqu'on arrive sur la page.
   useEffect(() => {

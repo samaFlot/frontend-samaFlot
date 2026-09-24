@@ -27,6 +27,7 @@ export default function MissionCreatedCard({ mission }) {
     vehicule_immatriculation,
     agent_nom,
     agent_prenom,
+    agent_photo,
   } = mission;
 
   const statusStyle =
@@ -61,7 +62,7 @@ export default function MissionCreatedCard({ mission }) {
         {/* Agent */}
         <div className="flex items-center gap-3">
           <img
-            src="https://placehold.co/32x32"
+            src={agent_photo || "https://placehold.co/32x32"}
             alt={`${agent_prenom} ${agent_nom}`}
             className="size-8 rounded-full"
           />
