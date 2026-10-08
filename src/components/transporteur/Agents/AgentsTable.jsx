@@ -1,11 +1,10 @@
 import { Pencil, Trash2 } from "lucide-react";
 import Pagination from "../Pagination";
 
-// Colonnes flexibles (minmax(0, ...fr)) qui peuvent rétrécir jusqu'à
-// rentrer dans le conteneur, plus deux colonnes fixes (Statut, Actions)
-// pour que le badge et les icônes ne soient jamais écrasés.
+// Colonnes flexibles qui peuvent rétrécir jusqu'à rentrer dans le conteneur.
+// Statut et Actions restent fixes pour éviter que les badges/icônes soient écrasés.
 const GRID_COLS =
-  "grid-cols-[minmax(0,1.6fr)_minmax(0,1.9fr)_minmax(0,1.2fr)_minmax(0,1.1fr)_minmax(0,1fr)_112px_88px]";
+  "grid-cols-[minmax(0,1.5fr)_minmax(0,1.7fr)_minmax(0,1.1fr)_minmax(0,1.1fr)_minmax(0,0.9fr)_minmax(0,1.1fr)_112px_88px]";
 
 export default function AgentsTable({
   agents,
@@ -33,11 +32,15 @@ export default function AgentsTable({
           </div>
 
           <div className="px-3 py-4 text-xs font-bold uppercase tracking-wide text-slate-400">
-            Permis de conduire
+            Permis
           </div>
 
           <div className="px-3 py-4 text-xs font-bold uppercase tracking-wide text-slate-400">
-            Catégorie permis
+            Catégorie
+          </div>
+
+          <div className="px-3 py-4 text-xs font-bold uppercase tracking-wide text-slate-400">
+            Expiration
           </div>
 
           <div className="px-3 py-4 text-xs font-bold uppercase tracking-wide text-slate-400">
@@ -49,7 +52,7 @@ export default function AgentsTable({
           </div>
         </div>
 
-        {/* Chargement */}
+        {/* Aucun agent */}
         {!agents?.length && (
           <div className="px-3 py-8 text-center text-sm text-slate-400">
             Aucun agent trouvé.
@@ -59,6 +62,7 @@ export default function AgentsTable({
         {/* Lignes */}
         {agents?.map((agent) => {
           const isAvailable = agent.disponible === true;
+          const permisValide = agent.permis_valide === true;
 
           return (
             <div
@@ -70,7 +74,7 @@ export default function AgentsTable({
                 <img
                   src={agent.photo}
                   alt={`${agent.prenom} ${agent.nom}`}
-                  className="size-10 shrink-0 rounded-full"
+                  className="size-10 shrink-0 rounded-full object-cover"
                 />
 
                 <div className="min-w-0">
@@ -80,7 +84,7 @@ export default function AgentsTable({
                 </div>
               </div>
 
-              {/* Contact : téléphone puis email en dessous */}
+              {/* Contact */}
               <div className="min-w-0 px-3 py-5">
                 <p className="break-words text-sm text-slate-600">
                   {agent.telephone || "-"}
@@ -98,7 +102,7 @@ export default function AgentsTable({
                 {agent.adresse || "-"}
               </div>
 
-              {/* Permis de conduire */}
+              {/* Numéro de permis */}
               <div className="min-w-0 break-words px-3 py-5 text-sm text-slate-600">
                 {agent.numero_permis || "-"}
               </div>
@@ -108,7 +112,32 @@ export default function AgentsTable({
                 {agent.categorie_permis || "-"}
               </div>
 
-              {/* Statut */}
+              {/* Date d'expiration */}
+              <div className="min-w-0 px-3 py-5">
+                {agent.date_expiration_permis ? (
+                  <p className="text-sm text-slate-600">
+                    {new Date(
+                      agent.date_expiration_permis
+                    ).toLocaleDateString("fr-FR")}
+                  </p>
+                ) : (
+                  <span className="text-sm text-slate-400">-</span>
+                )}
+
+                {agent.date_expiration_permis && (
+                  <span
+                    className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                      permisValide
+                        ? "bg-emerald-50 text-emerald-600"
+                        : "bg-red-50 text-red-500"
+                    }`}
+                  >
+                    {permisValide ? "Valide" : "Expiré"}
+                  </span>
+                )}
+              </div>
+
+              {/* Statut de disponibilité */}
               <div className="min-w-0 px-3 py-5">
                 <span
                   className={`inline-flex rounded-full px-3 py-1 text-xs font-bold tracking-tight ${

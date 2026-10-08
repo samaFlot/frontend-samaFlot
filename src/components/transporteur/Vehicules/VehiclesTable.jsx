@@ -1,4 +1,5 @@
-import { Pencil, Trash2 } from "lucide-react";
+import { Eye, Pencil, Trash2 } from "lucide-react";
+import { Link } from "react-router-dom";
 import Pagination from "../Pagination";
 
 
@@ -66,6 +67,14 @@ export default function VehiclesTable({
 
             {/* Actions */}
             <div className="flex justify-end gap-3 px-6 py-4">
+              <Link
+                to={`/transporteur/vehicules/${vehicle.id}`}
+                className="flex size-8 items-center justify-center text-slate-400 transition-colors hover:text-sky-950"
+                aria-label="Voir le détail de la mission"
+                title="Voir le détail"
+              >
+                <Eye className="size-4" />
+              </Link>
               <button
                 type="button"
                 onClick={() => onEdit(vehicle)}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Camera, Pencil, Save, UserRound } from "lucide-react";
 
-// Champ modifiable (mode modification)
+// Champ modifiable
 function Field({ label, value, onChange, type = "text" }) {
   return (
     <div className="flex flex-col gap-2">
@@ -19,7 +19,7 @@ function Field({ label, value, onChange, type = "text" }) {
   );
 }
 
-// Information affichée en lecture seule (mode consultation)
+// Information affichée en lecture seule
 function InfoLine({ label, value }) {
   return (
     <div className="flex flex-col gap-2">
@@ -28,7 +28,7 @@ function InfoLine({ label, value }) {
       </span>
 
       <div className="w-full rounded-xl border border-gray-100 bg-gray-50 px-5 py-3 text-base font-medium text-sky-950">
-        {value || "—"}
+        {value || " "}
       </div>
     </div>
   );
@@ -93,7 +93,7 @@ export default function PersonalInfoCard({ profil, onSave }) {
     setEditing(false);
   };
 
-  // Choisir une photo
+  // appelée quand l'utilisateur choisit une photo
   const handlePhotoChange = (e) => {
     const fichier = e.target.files?.[0];
 
@@ -102,6 +102,8 @@ export default function PersonalInfoCard({ profil, onSave }) {
     }
 
     setPhoto(fichier);
+    //on veut pouvoir afficher immédiatement la photo à l'écran, avant même de l'envoyer au serveur.
+    //URL.createObjectURL(fichier) crée une URL temporaire vers le fichier.
     setPhotoPreview(URL.createObjectURL(fichier));
   };
 
@@ -149,6 +151,7 @@ export default function PersonalInfoCard({ profil, onSave }) {
         // Ex: { email: ["Cet email est déjà utilisé."] }
         message = Object.entries(data)
           .map(([champ, erreurs]) =>
+            //Si erreurs est un tableau, rassemble ses éléments. Sinon, utilise directement l'erreur.
             `${champ} : ${Array.isArray(erreurs) ? erreurs.join(" ") : erreurs}`
           )
           .join(" | ");

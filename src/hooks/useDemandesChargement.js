@@ -6,6 +6,7 @@ import {
   creerDemandeChargement,
   annulerDemandeChargement,
   recupererRessourcesDisponibles,
+  recupererPropositionsIA,
 } from '../services/demandesChargement';
 
 export const useDemandesChargement = () => {
@@ -146,19 +147,13 @@ export const useDemandesChargement = () => {
   };
 
   // Charger les ressources disponibles.
-  const chargerRessourcesDisponibles = async (
-    demandeId,
-    dateFinPrevue
-  ) => {
+  const chargerRessourcesDisponibles = async (demandeId) => {
     try {
       setLoading(true);
       setError(null);
 
       const donnees =
-        await recupererRessourcesDisponibles(
-          demandeId,
-          dateFinPrevue
-        );
+        await recupererRessourcesDisponibles(demandeId);
 
       setRessourcesDisponibles(donnees);
 
@@ -179,6 +174,23 @@ export const useDemandesChargement = () => {
     }
   };
 
+  // Charger les propositions de l'IA.
+  const chargerPropositionsIA = async (demandeId) => {
+    try {
+      const donnees =
+        await recupererPropositionsIA(demandeId);
+
+      return donnees;
+    } catch (error) {
+      console.error(
+        'Erreur propositions IA :',
+        error
+      );
+
+      throw error;
+    }
+  };
+
   // Chargement initial.
   useEffect(() => {
     chargerDemandes();
@@ -195,5 +207,8 @@ export const useDemandesChargement = () => {
     ajouterDemande,
     annulerDemande,
     chargerRessourcesDisponibles,
+    chargerPropositionsIA,
   };
 };
+
+

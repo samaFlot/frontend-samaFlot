@@ -28,7 +28,7 @@ function Sidebar({ items }) {
   // Préparer le nom et la photo
   // ----------------------------------------------------------
 
-  // Construire le nom complet
+  // Construire le nom complet en supprimant les valeurs vides ou inexistantes
   const nomUtilisateur = [
     profil?.first_name,
     profil?.last_name,

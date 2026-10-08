@@ -44,16 +44,19 @@ export const annulerDemandeChargement = async (
 };
 
 // Récupérer les ressources disponibles pour une demande.
-export const recupererRessourcesDisponibles =
-  async (demandeId, dateFinPrevue) => {
-    const response = await api.get(
-      `/operations/demandes-chargement/${demandeId}/ressources-disponibles/`,
-      {
-        params: {
-          date_fin_prevue: dateFinPrevue,
-        },
-      }
-    );
+export const recupererRessourcesDisponibles = async (demandeId) => {
+  const response = await api.get(
+    `/operations/demandes-chargement/${demandeId}/ressources-disponibles/`
+  );
 
-    return response.data;
-  };
+  return response.data;
+};
+
+// Récupérer les propositions de l'IA pour une demande.
+export const recupererPropositionsIA = async (demandeId) => {
+  const response = await api.get(
+    `/operations/demandes-chargement/${demandeId}/propositions-ia/`
+  );
+
+  return response.data;
+};
