@@ -23,6 +23,7 @@ import ProfilPageTransporteur from "./pages/transporteur/ProfilPageTransporteur"
 import SuiviVehicules from "./pages/transporteur/SuiviVehicules";
 import VehiculeDetail from "./pages/transporteur/VehiculeDetail";
 import DemandeChargementDetail from "./pages/transporteur/DemandeChargementDetail";
+import SignalementDetail from "./pages/transporteur/SignalementDetail";
 
 function AppRoutes() {
   return (
@@ -63,6 +64,7 @@ function AppRoutes() {
             <Route path="/transporteur/missions/:id" element={<MissionDetailPage />} />
             <Route path="/transporteur/profil" element={<ProfilPageTransporteur />} />
             <Route path="/transporteur/suivi" element={<SuiviVehicules />} />
+            <Route path="/transporteur/signalements/:id" element={<SignalementDetail />}/>
         </Route>
         <Route path="/login" element={<LoginPage />} />
     </Routes>

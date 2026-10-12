@@ -1,7 +1,7 @@
 import { useState } from "react";
+
 import {
   FileText,
-  Eye,
   Pencil,
   Trash2,
   Download,
@@ -78,6 +78,11 @@ function adapterDocument(document) {
 
     dateExpiration: formaterDate(document.date_expiration),
 
+    // On conserve les dates originales pour le formulaire de modification.
+    dateEmissionISO: document.date_emission,
+
+    dateExpirationISO: document.date_expiration,
+
     fichier: document.fichier
       ? document.fichier.split("/").pop()
       : "",
@@ -96,15 +101,19 @@ export default function DocumentsVehicule({
 
   const [modalOuvert, setModalOuvert] = useState(false);
 
+  const [documentEnEdition, setDocumentEnEdition] = useState(null);
+
   const {
     loading,
     error,
     ajouterNouveauDocument,
+    modifierDocumentExistant,
+    supprimerDocumentExistant,
+    telechargerDocumentExistant,
   } = useDocuments();
 
   // Ajouter un document
   async function ajouterDocument(donnees) {
-    // Vérification du véhicule
     if (!vehiculeId) {
       console.error(
         "Impossible d'ajouter le document : vehiculeId manquant."
@@ -112,7 +121,6 @@ export default function DocumentsVehicule({
       return;
     }
 
-    // Vérification du fichier
     if (!donnees.fichier) {
       console.error(
         "Impossible d'ajouter le document : fichier manquant."
@@ -120,35 +128,122 @@ export default function DocumentsVehicule({
       return;
     }
 
-    const nouveauDocument =
-      await ajouterNouveauDocument(
-        vehiculeId,
-        {
-          type_document: donnees.type,
-          numero_document: donnees.numero,
-          date_emission: donnees.dateEmission,
-          date_expiration: donnees.dateExpiration,
-          fichier: donnees.fichier,
-        }
-      );
+    const nouveauDocument = await ajouterNouveauDocument(
+      vehiculeId,
+      {
+        type_document: donnees.type,
+        numero_document: donnees.numero,
+        date_emission: donnees.dateEmission,
+        date_expiration: donnees.dateExpiration,
+        fichier: donnees.fichier,
+      }
+    );
 
-    // Le backend n'a pas réussi à créer le document
     if (!nouveauDocument) {
       return;
     }
 
-    // Adapter le document reçu du backend
-    const documentAdapte =
-      adapterDocument(nouveauDocument);
+    const documentAdapte = adapterDocument(nouveauDocument);
 
-    // Ajouter le document à la liste
     setListe((ancienneListe) => [
       ...ancienneListe,
       documentAdapte,
     ]);
 
-    // Fermer le modal
     setModalOuvert(false);
+  }
+
+  // Modifier un document
+  async function modifierDocument(donnees) {
+    if (!documentEnEdition) {
+      return;
+    }
+
+    const documentModifie = await modifierDocumentExistant(
+      documentEnEdition.id,
+      {
+        type_document: donnees.type,
+        numero_document: donnees.numero,
+        date_emission: donnees.dateEmission,
+        date_expiration: donnees.dateExpiration,
+        fichier: donnees.fichier,
+      }
+    );
+
+    if (!documentModifie) {
+      return;
+    }
+
+    const documentAdapte = adapterDocument(documentModifie);
+
+    setListe((ancienneListe) =>
+      ancienneListe.map((document) =>
+        document.id === documentAdapte.id
+          ? documentAdapte
+          : document
+      )
+    );
+
+    setModalOuvert(false);
+    setDocumentEnEdition(null);
+  }
+
+  // Ouvrir le formulaire de modification
+  function ouvrirModification(document) {
+    setDocumentEnEdition(document);
+    setModalOuvert(true);
+  }
+
+  // Supprimer un document
+  async function supprimerDocument(document) {
+    const confirmation = window.confirm(
+      `Voulez-vous vraiment supprimer le document "${document.nom}" ?`
+    );
+
+    if (!confirmation) {
+      return;
+    }
+
+    const suppressionReussie = await supprimerDocumentExistant(
+      document.id
+    );
+
+    if (!suppressionReussie) {
+      return;
+    }
+
+    setListe((ancienneListe) =>
+      ancienneListe.filter(
+        (element) => element.id !== document.id
+      )
+    );
+  }
+
+  // Télécharger un document
+  async function telechargerFichier(document) {
+    const fichier = await telechargerDocumentExistant(document.id);
+
+    if (!fichier) {
+      return;
+    }
+
+    const url = window.URL.createObjectURL(fichier);
+    const lien = window.document.createElement("a");
+
+    lien.href = url;
+    lien.download = document.fichier || `document-${document.id}`;
+
+    window.document.body.appendChild(lien);
+    lien.click();
+    lien.remove();
+
+    window.URL.revokeObjectURL(url);
+  }
+
+  // Fermer le formulaire
+  function fermerModal() {
+    setModalOuvert(false);
+    setDocumentEnEdition(null);
   }
 
   // Statistiques
@@ -181,14 +276,17 @@ export default function DocumentsVehicule({
 
         <button
           type="button"
-          onClick={() => setModalOuvert(true)}
+          onClick={() => {
+            setDocumentEnEdition(null);
+            setModalOuvert(true);
+          }}
           disabled={loading}
           className="flex items-center justify-center gap-2 px-6 py-2.5 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl shadow-md shadow-orange-500/20 disabled:opacity-50"
         >
           <Plus size={16} />
 
           {loading
-            ? "Ajout en cours..."
+            ? "Opération en cours..."
             : "Ajouter un document"}
         </button>
       </div>
@@ -222,13 +320,10 @@ export default function DocumentsVehicule({
             <tbody>
               {liste.length > 0 ? (
                 liste.map((doc) => {
-                  const statut =
-                    styleStatut[doc.statut] ||
-                    {
-                      badge:
-                        "bg-slate-100 text-slate-600",
-                      point: "bg-slate-400",
-                    };
+                  const statut = styleStatut[doc.statut] || {
+                    badge: "bg-slate-100 text-slate-600",
+                    point: "bg-slate-400",
+                  };
 
                   const icone =
                     styleIcone[doc.nom] ||
@@ -243,7 +338,6 @@ export default function DocumentsVehicule({
                       {/* Type */}
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-3">
-
                           <div
                             className={`w-10 h-10 shrink-0 rounded-lg flex items-center justify-center ${icone}`}
                           >
@@ -253,7 +347,6 @@ export default function DocumentsVehicule({
                           <span className="font-bold text-slate-700">
                             {doc.nom}
                           </span>
-
                         </div>
                       </td>
 
@@ -309,25 +402,32 @@ export default function DocumentsVehicule({
                       <td className="px-6 py-5">
                         <div className="flex items-center justify-end gap-1 text-slate-400">
 
-                          <BoutonAction titre="Voir">
-                            <Eye size={16} />
-                          </BoutonAction>
-
-                          <BoutonAction titre="Télécharger">
+                          <BoutonAction
+                            titre="Télécharger"
+                            onClick={() => telechargerFichier(doc)}
+                            disabled={loading || !doc.fichier}
+                          >
                             <Download size={16} />
                           </BoutonAction>
 
-                          <BoutonAction titre="Modifier">
+                          <BoutonAction
+                            titre="Modifier"
+                            onClick={() => ouvrirModification(doc)}
+                            disabled={loading}
+                          >
                             <Pencil size={16} />
                           </BoutonAction>
 
-                          <BoutonAction titre="Supprimer">
+                          <BoutonAction
+                            titre="Supprimer"
+                            onClick={() => supprimerDocument(doc)}
+                            disabled={loading}
+                          >
                             <Trash2 size={16} />
                           </BoutonAction>
 
                         </div>
                       </td>
-
                     </tr>
                   );
                 })
@@ -376,8 +476,14 @@ export default function DocumentsVehicule({
       {/* Modal */}
       {modalOuvert && (
         <ModalAjoutDocument
-          onFermer={() => setModalOuvert(false)}
-          onAjouter={ajouterDocument}
+          key={documentEnEdition?.id || "ajout"}
+          document={documentEnEdition}
+          onFermer={fermerModal}
+          onAjouter={
+            documentEnEdition
+              ? modifierDocument
+              : ajouterDocument
+          }
         />
       )}
 
@@ -401,13 +507,17 @@ function Th({
 function BoutonAction({
   titre,
   children,
+  onClick,
+  disabled = false,
 }) {
   return (
     <button
       type="button"
       title={titre}
       aria-label={titre}
-      className="p-2 rounded-lg hover:bg-slate-100 hover:text-slate-600"
+      onClick={onClick}
+      disabled={disabled}
+      className="p-2 rounded-lg hover:bg-slate-100 hover:text-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {children}
     </button>
@@ -422,7 +532,6 @@ function Statistique({
 }) {
   return (
     <div className="p-6 bg-white rounded-2xl border border-slate-100 flex items-center gap-4">
-
       <div
         className={`w-12 h-12 shrink-0 rounded-full flex items-center justify-center ${couleur}`}
       >
@@ -438,7 +547,6 @@ function Statistique({
           {label}
         </p>
       </div>
-
     </div>
   );
 }

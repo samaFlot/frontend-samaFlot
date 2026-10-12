@@ -16,18 +16,18 @@ const classeLabel =
 export default function ModalAjoutDocument({
   onFermer,
   onAjouter,
+  document = null,
 }) {
   const [formulaire, setFormulaire] = useState({
-    type: "",
-    numero: "",
-    dateEmission: "",
-    dateExpiration: "",
+    type: document?.nom || "",
+    numero: document?.numero || "",
+    dateEmission: document?.dateEmissionISO || "",
+    dateExpiration: document?.dateExpirationISO || "",
   });
 
   const [fichier, setFichier] = useState(null);
   const [survol, setSurvol] = useState(false);
 
-  // Met à jour un champ du formulaire
   function modifierChamp(e) {
     setFormulaire({
       ...formulaire,
@@ -35,23 +35,18 @@ export default function ModalAjoutDocument({
     });
   }
 
-  // Fichier choisi avec le sélecteur
   function choisirFichier(e) {
     setFichier(e.target.files[0] || null);
   }
 
-  // Fichier glissé-déposé
   function deposerFichier(e) {
     e.preventDefault();
 
     setSurvol(false);
 
-    setFichier(
-      e.dataTransfer.files[0] || null
-    );
+    setFichier(e.dataTransfer.files[0] || null);
   }
 
-  // Envoyer le formulaire
   function soumettre(e) {
     e.preventDefault();
 
@@ -62,7 +57,6 @@ export default function ModalAjoutDocument({
   }
 
   return (
-    // Fond sombre
     <div
       className="fixed inset-0 z-50 bg-sky-950/50 backdrop-blur-sm flex items-center justify-center p-4"
       onClick={onFermer}
@@ -74,17 +68,17 @@ export default function ModalAjoutDocument({
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-xl max-h-[90vh] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden"
       >
-
         {/* En-tête */}
         <div className="px-6 sm:px-8 py-6 bg-slate-50 border-b border-slate-100 flex items-start justify-between gap-4">
-
           <div>
             <h2 className="text-xl font-bold text-slate-800">
-              Ajouter un document
+              {document ? "Modifier le document" : "Ajouter un document"}
             </h2>
 
             <p className="mt-1 text-sm text-slate-500">
-              Renseignez les détails du nouveau document administratif.
+              {document
+                ? "Modifiez les informations du document administratif."
+                : "Renseignez les détails du nouveau document administratif."}
             </p>
           </div>
 
@@ -96,13 +90,10 @@ export default function ModalAjoutDocument({
           >
             <X size={20} />
           </button>
-
         </div>
-
 
         {/* Champs */}
         <div className="px-6 sm:px-8 py-6 flex flex-col gap-5 overflow-y-auto">
-
           {/* Type */}
           <div>
             <label className={classeLabel}>
@@ -121,16 +112,12 @@ export default function ModalAjoutDocument({
               </option>
 
               {typesDocument.map((type) => (
-                <option
-                  key={type}
-                  value={type}
-                >
+                <option key={type} value={type}>
                   {type}
                 </option>
               ))}
             </select>
           </div>
-
 
           {/* Numéro */}
           <div>
@@ -148,10 +135,8 @@ export default function ModalAjoutDocument({
             />
           </div>
 
-
           {/* Dates */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-
             <div>
               <label className={classeLabel}>
                 Date d&apos;émission
@@ -166,7 +151,6 @@ export default function ModalAjoutDocument({
                 className={classeChamp}
               />
             </div>
-
 
             <div>
               <label className={classeLabel}>
@@ -183,9 +167,7 @@ export default function ModalAjoutDocument({
                 className={classeChamp}
               />
             </div>
-
           </div>
-
 
           {/* Fichier */}
           <div>
@@ -206,15 +188,13 @@ export default function ModalAjoutDocument({
                   : "border-slate-200 hover:border-slate-300"
               }`}
             >
-
               <input
                 type="file"
                 accept=".pdf,.jpg,.jpeg,.png"
                 onChange={choisirFichier}
                 className="hidden"
-                required
+                required={!document}
               />
-
 
               {fichier ? (
                 <>
@@ -229,6 +209,21 @@ export default function ModalAjoutDocument({
 
                   <p className="text-xs text-slate-400">
                     Cliquez pour changer de fichier
+                  </p>
+                </>
+              ) : document?.fichier ? (
+                <>
+                  <FileText
+                    size={32}
+                    className="text-red-500"
+                  />
+
+                  <p className="text-sm font-semibold text-slate-700 break-all">
+                    {document.fichier}
+                  </p>
+
+                  <p className="text-xs text-slate-400">
+                    Fichier actuel. Sélectionnez-en un autre pour le remplacer.
                   </p>
                 </>
               ) : (
@@ -247,16 +242,12 @@ export default function ModalAjoutDocument({
                   </p>
                 </>
               )}
-
             </label>
           </div>
-
         </div>
-
 
         {/* Boutons */}
         <div className="px-6 sm:px-8 py-5 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3">
-
           <button
             type="button"
             onClick={onFermer}
@@ -269,11 +260,9 @@ export default function ModalAjoutDocument({
             type="submit"
             className="px-8 py-2.5 rounded-xl font-bold text-white bg-orange-500 hover:bg-orange-600 shadow-md shadow-orange-500/20"
           >
-            Ajouter le document
+            {document ? "Enregistrer les modifications" : "Ajouter le document"}
           </button>
-
         </div>
-
       </form>
     </div>
   );

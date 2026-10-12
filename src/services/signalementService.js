@@ -19,3 +19,8 @@ export const remettreEnBonEtat = async (id) => {
   );
   return response.data;
 };
+
+export const recupererSignalement = async (id) => {
+  const response = await api.get(`/signalements/${id}/`);
+  return response.data;
+};

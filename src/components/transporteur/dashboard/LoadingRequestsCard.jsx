@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function LoadingRequestsCard({
   demandes,
   loading,
@@ -14,12 +16,12 @@ export default function LoadingRequestsCard({
           Demandes de chargement récentes
         </h2>
 
-        <button
-          type="button"
+        <Link
+          to="/transporteur/demandes"
           className="text-sm font-semibold leading-5 text-orange-500"
         >
-          Voir tout →
-        </button>
+          Voir tout
+        </Link>
       </div>
 
       <div className="w-full overflow-x-auto">

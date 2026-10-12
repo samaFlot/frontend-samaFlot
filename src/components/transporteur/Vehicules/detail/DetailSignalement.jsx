@@ -54,6 +54,7 @@ export default function DetailSignalement({
   chargement,
   erreur,
 }) {
+
   const photo = signalement.photo;
 
   // Mission liée au signalement
@@ -96,13 +97,12 @@ export default function DetailSignalement({
           className="flex items-center gap-2 font-medium text-slate-500 hover:text-slate-800"
         >
           <ArrowLeft size={16} />
-          Retour
         </button>
 
         <div className="w-px h-6 bg-slate-200" />
 
         <h1 className="text-lg sm:text-xl font-bold text-slate-800">
-          Signalement #{signalement.id}
+          Signalement
         </h1>
 
       </header>
@@ -225,7 +225,12 @@ export default function DetailSignalement({
                       <div className="h-48 bg-slate-100 rounded-2xl border border-slate-100 overflow-hidden">
 
                         <img
-                          src={`http://127.0.0.1:8000${photo}`}
+                          //src={`http://127.0.0.1:8000${photo}`}
+                          src={
+                            photo.startsWith("http")
+                              ? photo
+                              : `http://127.0.0.1:8000${photo}`
+                          }
                           alt="Constat"
                           className="w-full h-full object-cover"
                         />
