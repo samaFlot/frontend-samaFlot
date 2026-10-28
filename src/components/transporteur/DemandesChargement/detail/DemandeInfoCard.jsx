@@ -16,12 +16,13 @@ export default function DemandeInfoCard({ demande }) {
     nombre_vehicules_demandes,
     date_chargement,
     heure_chargement,
+    date_fin_prevue,
     point_depart,
     destination,
     description,
   } = demande;
 
-  // Formater la date pour l'affichage
+  // Formater la date de chargement
   const dateFormatee = new Date(
     `${date_chargement}T00:00:00`
   ).toLocaleDateString("fr-FR", {
@@ -29,6 +30,15 @@ export default function DemandeInfoCard({ demande }) {
     month: "short",
     year: "numeric",
   });
+
+  // Formater la date de fin prévue
+  const dateFinFormatee = date_fin_prevue
+    ? new Date(date_fin_prevue).toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+    : "-";
 
   // Afficher uniquement heures et minutes
   const heureFormatee = heure_chargement
@@ -49,7 +59,7 @@ export default function DemandeInfoCard({ demande }) {
       {/* Contenu */}
       <div className="w-full p-6 sm:p-8">
 
-        {/* Première ligne : 3 colonnes */}
+        {/* Première ligne */}
         <div className="grid w-full grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-3">
 
           <InfoRow
@@ -80,7 +90,7 @@ export default function DemandeInfoCard({ demande }) {
           />
         </div>
 
-        {/* Deuxième ligne : 3 colonnes */}
+        {/* Deuxième ligne */}
         <div className="mt-5 grid w-full grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-3">
 
           <InfoRow
@@ -90,10 +100,20 @@ export default function DemandeInfoCard({ demande }) {
           />
 
           <InfoRow
+            label="Date de fin prévue"
+            icon={<CalendarDays className="size-4 text-orange-500" />}
+            value={dateFinFormatee}
+          />
+
+          <InfoRow
             label="Point de départ"
             icon={<MapPin className="size-4 text-red-500" />}
             value={point_depart}
           />
+        </div>
+
+        {/* Troisième ligne */}
+        <div className="mt-5 grid w-full grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-3">
 
           <InfoRow
             label="Destination"

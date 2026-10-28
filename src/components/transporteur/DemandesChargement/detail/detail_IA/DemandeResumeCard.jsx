@@ -1,0 +1,158 @@
+import {
+  CalendarDays,
+  Clock3,
+  MapPin,
+  Truck,
+  User,
+} from "lucide-react";
+
+export default function DemandeResumeCard({ demande }) {
+  if (!demande) {
+    return null;
+  }
+
+  const {
+    demandeur,
+    nombre_vehicules_demandes,
+    date_chargement,
+    heure_chargement,
+    date_fin_prevue,
+    point_depart,
+    destination,
+    description,
+  } = demande;
+
+  // Date de chargement
+  const dateFormatee = date_chargement
+    ? new Date(`${date_chargement}T00:00:00`).toLocaleDateString(
+        "fr-FR",
+        {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }
+      )
+    : "-";
+
+  // Date de fin prévue
+  const dateFinFormatee = date_fin_prevue
+    ? new Date(date_fin_prevue).toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+    : "-";
+
+  // Heure de chargement
+  const heureFormatee = heure_chargement
+    ? heure_chargement.slice(0, 5)
+    : "-";
+
+  return (
+    <section className="w-full overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-100">
+      {/* Header */}
+      <div className="flex items-center gap-2 border-b border-slate-50 bg-slate-50/30 px-6 py-4">
+        <Truck className="size-4 text-cyan-800" />
+
+        <h2 className="text-base font-bold leading-6 text-sky-950">
+          Informations de la demande
+        </h2>
+      </div>
+
+      {/* Contenu */}
+      <div className="w-full p-6 sm:p-8">
+
+        {/* Première ligne */}
+        <div className="grid w-full grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-3">
+          <InfoRow
+            label="Demandeur"
+            icon={<User className="size-4 text-slate-400" />}
+            value={demandeur}
+          />
+
+          <div className="flex flex-col gap-1.5">
+            <span className="text-xs font-bold uppercase tracking-wide text-slate-400">
+              Nombre de véhicules
+            </span>
+
+            <div className="flex items-center gap-2">
+              <Truck className="size-4 text-slate-400" />
+
+              <span className="text-sm font-semibold text-slate-800">
+                {nombre_vehicules_demandes}{" "}
+                {nombre_vehicules_demandes > 1
+                  ? "véhicules"
+                  : "véhicule"}
+              </span>
+            </div>
+          </div>
+
+          <InfoRow
+            label="Date de chargement"
+            icon={<CalendarDays className="size-4 text-slate-400" />}
+            value={dateFormatee}
+          />
+        </div>
+
+        {/* Deuxième ligne */}
+        <div className="mt-5 grid w-full grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-3">
+          <InfoRow
+            label="Heure de chargement"
+            icon={<Clock3 className="size-4 text-slate-400" />}
+            value={heureFormatee}
+          />
+
+          <InfoRow
+            label="Date de fin prévue"
+            icon={<CalendarDays className="size-4 text-orange-500" />}
+            value={dateFinFormatee}
+          />
+
+          <InfoRow
+            label="Point de départ"
+            icon={<MapPin className="size-4 text-red-500" />}
+            value={point_depart}
+          />
+        </div>
+
+        {/* Troisième ligne */}
+        <div className="mt-5 grid w-full grid-cols-1 gap-x-8 gap-y-5 md:grid-cols-3">
+          <InfoRow
+            label="Destination"
+            icon={<MapPin className="size-4 text-emerald-500" />}
+            value={destination}
+          />
+        </div>
+
+        {/* Description */}
+        <div className="mt-5 border-t border-slate-50 pt-5">
+          <div className="mb-2 text-xs font-bold uppercase tracking-wide text-slate-400">
+            Description & Instructions
+          </div>
+
+          <p className="max-w-4xl text-sm leading-6 text-slate-600">
+            {description || "Aucune description fournie."}
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function InfoRow({ label, icon, value }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-xs font-bold uppercase tracking-wide text-slate-400">
+        {label}
+      </span>
+
+      <div className="flex items-center gap-2">
+        {icon}
+
+        <span className="text-sm font-semibold text-slate-800">
+          {value || "-"}
+        </span>
+      </div>
+    </div>
+  );
+}

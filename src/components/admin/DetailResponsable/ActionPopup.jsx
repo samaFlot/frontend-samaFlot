@@ -41,7 +41,7 @@ const VARIANTES = {
 };
 
 export default function ActionPopup({
-  // Contenu du popup (null = popup fermé)
+  // Contenu du popup
   popup,
 
   // Action en cours : les boutons sont bloqués

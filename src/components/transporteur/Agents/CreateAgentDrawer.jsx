@@ -15,6 +15,7 @@ export default function CreateAgentDrawer({
   const [email, setEmail] = useState("");
   const [numeroPermis, setNumeroPermis] = useState("");
   const [categoriePermis, setCategoriePermis] = useState("");
+  const [dateExpirationPermis, setDateExpirationPermis] = useState("");
 
   const [photo, setPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState("");
@@ -26,157 +27,165 @@ export default function CreateAgentDrawer({
 
   // Remplir le formulaire quand on modifie un agent
   useEffect(() => {
-  if (agent) {
-    setNom(agent.nom || "");
-    setPrenom(agent.prenom || "");
-    setTelephone(agent.telephone || "");
-    setAdresse(agent.adresse || "");
-    setEmail(agent.email || "");
-    setNumeroPermis(agent.numero_permis || "");
-    setCategoriePermis(agent.categorie_permis || "");
-    setPhoto(null);
-    setPhotoPreview(agent.photo || "");
-  } else {
-    setNom("");
-    setPrenom("");
-    setTelephone("");
-    setAdresse("");
-    setEmail("");
-    setNumeroPermis("");
-    setCategoriePermis("");
-    setPhoto(null);
-    setPhotoPreview("");
-  }
+    if (agent) {
+      setNom(agent.nom || "");
+      setPrenom(agent.prenom || "");
+      setTelephone(agent.telephone || "");
+      setAdresse(agent.adresse || "");
+      setEmail(agent.email || "");
+      setNumeroPermis(agent.numero_permis || "");
+      setCategoriePermis(agent.categorie_permis || "");
+      setDateExpirationPermis(agent.date_expiration_permis || "");
+      setPhoto(null);
+      setPhotoPreview(agent.photo || "");
+    } else {
+      setNom("");
+      setPrenom("");
+      setTelephone("");
+      setAdresse("");
+      setEmail("");
+      setNumeroPermis("");
+      setCategoriePermis("");
+      setDateExpirationPermis("");
+      setPhoto(null);
+      setPhotoPreview("");
+    }
 
-  setError("");
-}, [agent, isOpen]);
+    setError("");
+  }, [agent, isOpen]);
 
   // Sélection de la photo
   const handlePhotoChange = (e) => {
-  const fichier = e.target.files?.[0];
+    const fichier = e.target.files?.[0];
 
-  if (!fichier) {
-    return;
-  }
+    if (!fichier) {
+      return;
+    }
 
-  if (photoPreview) {
-    URL.revokeObjectURL(photoPreview);
-  }
+    if (photoPreview) {
+      URL.revokeObjectURL(photoPreview);
+    }
 
-  setPhoto(fichier);
-  setPhotoPreview(URL.createObjectURL(fichier));
-};
+    setPhoto(fichier);
+    setPhotoPreview(URL.createObjectURL(fichier));
+  };
 
   // Envoyer le formulaire
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
 
-  // Nettoyer les espaces inutiles
-  const nomAgent = nom.trim();
-  const prenomAgent = prenom.trim();
-  const telephoneAgent = telephone.trim();
-  const adresseAgent = adresse.trim();
-  const emailAgent = email.trim();
-  const permisAgent = numeroPermis.trim();
-  const categorieAgent = categoriePermis.trim();
+    // Nettoyer les espaces inutiles
+    const nomAgent = nom.trim();
+    const prenomAgent = prenom.trim();
+    const telephoneAgent = telephone.trim();
+    const adresseAgent = adresse.trim();
+    const emailAgent = email.trim();
+    const permisAgent = numeroPermis.trim();
+    const categorieAgent = categoriePermis.trim();
+    const dateExpirationAgent = dateExpirationPermis;
 
-  // Vérifier les champs obligatoires
-  if (
-    !nomAgent ||
-    !prenomAgent ||
-    !telephoneAgent ||
-    !adresseAgent ||
-    !emailAgent
-  ) {
-    setError("Veuillez remplir tous les champs obligatoires.");
-    return;
-  }
-
-  // Vérifier le nom et le prénom
-  const nomRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/;
-
-  if (!nomRegex.test(nomAgent)) {
-    setError("Le nom contient des caractères invalides.");
-    return;
-  }
-
-  if (!nomRegex.test(prenomAgent)) {
-    setError("Le prénom contient des caractères invalides.");
-    return;
-  }
-
-  // Vérifier le téléphone sénégalais
-  // Accepte par exemple : 77 000 00 00 ou 770000000
-  const telephoneNettoye = telephoneAgent.replace(/\s/g, "");
-
-  const telephoneRegex = /^(70|75|76|77|78)\d{7}$/;
-
-  if (!telephoneRegex.test(telephoneNettoye)) {
-    setError(
-      "Veuillez saisir un numéro de téléphone valide (ex : 77 000 00 00)."
-    );
-    return;
-  }
-
-  // Vérifier l'email
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
-  if (!emailRegex.test(emailAgent)) {
-    setError("Veuillez saisir une adresse email valide.");
-    return;
-  }
-
-  // Vérifier l'adresse
-  if (adresseAgent.length < 2) {
-    setError("Veuillez saisir une adresse valide.");
-    return;
-  }
-
-  // Vérifier le numéro de permis s'il est renseigné
-  if (permisAgent && permisAgent.length < 3) {
-    setError("Le numéro de permis doit contenir au moins 3 caractères.");
-    return;
-  }
-
-  // Vérifier la catégorie du permis si elle est renseignée
-  if (categorieAgent && categorieAgent.length < 1) {
-    setError("Veuillez saisir une catégorie de permis valide.");
-    return;
-  }
-
-  // FormData au lieu d'un objet JSON pour pouvoir envoyer le fichier
-  const donnees = new FormData();
-  donnees.append("nom", nomAgent);
-  donnees.append("prenom", prenomAgent);
-  donnees.append("telephone", telephoneNettoye);
-  donnees.append("adresse", adresseAgent);
-  donnees.append("email", emailAgent);
-  donnees.append("numero_permis", permisAgent);
-  donnees.append("categorie_permis", categorieAgent);
-
-  // La photo n'est ajoutée que si l'utilisateur en a choisi une
-  if (photo) {
-    donnees.append("photo", photo);
-  }
-
-  try {
-    setSaving(true);
-
-    if (isEdit) {
-      await onUpdate(agent.id, donnees);
-    } else {
-      await onAdd(donnees);
+    // Vérifier les champs obligatoires
+    if (
+      !nomAgent ||
+      !prenomAgent ||
+      !telephoneAgent ||
+      !adresseAgent ||
+      !emailAgent
+    ) {
+      setError("Veuillez remplir tous les champs obligatoires.");
+      return;
     }
-  } catch (err) {
-    setError(
-      err?.response?.data?.detail ||
-        "Une erreur est survenue lors de l'enregistrement."
-    );
-  } finally {
-    setSaving(false);
-  }
-};
+
+    // Vérifier le nom et le prénom
+    const nomRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'-]+$/;
+
+    if (!nomRegex.test(nomAgent)) {
+      setError("Le nom contient des caractères invalides.");
+      return;
+    }
+
+    if (!nomRegex.test(prenomAgent)) {
+      setError("Le prénom contient des caractères invalides.");
+      return;
+    }
+
+    // Vérifier le téléphone sénégalais
+    // Accepte par exemple : 77 000 00 00 ou 770000000
+    const telephoneNettoye = telephoneAgent.replace(/\s/g, "");
+
+    const telephoneRegex = /^(70|75|76|77|78)\d{7}$/;
+
+    if (!telephoneRegex.test(telephoneNettoye)) {
+      setError(
+        "Veuillez saisir un numéro de téléphone valide (ex : 77 000 00 00)."
+      );
+      return;
+    }
+
+    // Vérifier l'email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+    if (!emailRegex.test(emailAgent)) {
+      setError("Veuillez saisir une adresse email valide.");
+      return;
+    }
+
+    // Vérifier l'adresse
+    if (adresseAgent.length < 2) {
+      setError("Veuillez saisir une adresse valide.");
+      return;
+    }
+
+    // Vérifier le numéro de permis s'il est renseigné
+    if (permisAgent && permisAgent.length < 3) {
+      setError("Le numéro de permis doit contenir au moins 3 caractères.");
+      return;
+    }
+
+    // Vérifier la catégorie du permis si elle est renseignée
+    if (categorieAgent && categorieAgent.length < 1) {
+      setError("Veuillez saisir une catégorie de permis valide.");
+      return;
+    }
+
+    // FormData au lieu d'un objet JSON pour pouvoir envoyer le fichier
+    const donnees = new FormData();
+    donnees.append("nom", nomAgent);
+    donnees.append("prenom", prenomAgent);
+    donnees.append("telephone", telephoneNettoye);
+    donnees.append("adresse", adresseAgent);
+    donnees.append("email", emailAgent);
+    donnees.append("numero_permis", permisAgent);
+    donnees.append("categorie_permis", categorieAgent);
+
+    // Ajouter la date d'expiration si elle est renseignée
+    if (dateExpirationAgent) {
+      donnees.append("date_expiration_permis", dateExpirationAgent);
+    }
+
+    // La photo n'est ajoutée que si l'utilisateur en a choisi une
+    if (photo) {
+      donnees.append("photo", photo);
+    }
+
+    try {
+      setSaving(true);
+
+      if (isEdit) {
+        await onUpdate(agent.id, donnees);
+      } else {
+        await onAdd(donnees);
+      }
+    } catch (err) {
+      setError(
+        err?.response?.data?.detail ||
+          "Une erreur est survenue lors de l'enregistrement."
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
 
   if (!isOpen) {
     return null;
@@ -417,6 +426,22 @@ const handleSubmit = async (e) => {
                     className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none placeholder:text-gray-400 focus:border-sky-900"
                   />
                 </div>
+
+                {/* Date d'expiration */}
+                <div>
+                  <label className="mb-2 block text-xs font-semibold text-slate-700">
+                    Date d'expiration
+                  </label>
+
+                  <input
+                    type="date"
+                    value={dateExpirationPermis}
+                    onChange={(e) =>
+                      setDateExpirationPermis(e.target.value)
+                    }
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none focus:border-sky-900"
+                  />
+                </div>
               </div>
             </section>
 
@@ -435,7 +460,6 @@ const handleSubmit = async (e) => {
         {/* Footer */}
         <div className="shrink-0 border-t border-slate-200 bg-slate-50 px-6 py-6 sm:px-8">
           <div className="flex flex-col gap-3">
-
             <button
               type="submit"
               form="agent-form"

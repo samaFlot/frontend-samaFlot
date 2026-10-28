@@ -23,11 +23,17 @@ export default function NotificationsButton() {
   ).length;
 
   const handleNotificationClick = async (notification) => {
+    console.log("Notification reçue :", notification);
     if (!notification.lu) {
       await marquerCommeLue(notification.id);
     }
 
     setAfficherNotifications(false);
+
+    if (notification.type === "SIGNALEMENT_CREE") {
+      navigate(`/transporteur/signalements/${notification.signalement}`);
+      return;
+    }
 
     navigate(`/transporteur/missions/${notification.mission}`);
   };

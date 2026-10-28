@@ -15,12 +15,15 @@ import LoginPage from "./pages/auth/LoginPage";
 import VehiclesPage from "./pages/transporteur/VehiculesPage";
 import AgentsPage from "./pages/transporteur/AgentsPage";
 import DemandesChargementPage from "./pages/transporteur/DemandesChargementPage";
-import DemandeChargementDetailPage from "./pages/transporteur/DemandeChargementDetailPage";
+//import DemandeChargementDetailPage from "./pages/transporteur/DemandeChargementDetailPage";
 import CreerMissionPage from "./pages/transporteur/CreerMissionPage";
 import MissionsPage from "./pages/transporteur/MissionsPage";
 import MissionDetailPage from "./pages/transporteur/MissionDetailPage";
 import ProfilPageTransporteur from "./pages/transporteur/ProfilPageTransporteur";
 import SuiviVehicules from "./pages/transporteur/SuiviVehicules";
+import VehiculeDetail from "./pages/transporteur/VehiculeDetail";
+import DemandeChargementDetail from "./pages/transporteur/DemandeChargementDetail";
+import SignalementDetail from "./pages/transporteur/SignalementDetail";
 
 function AppRoutes() {
   return (
@@ -30,7 +33,6 @@ function AppRoutes() {
             <Route path="/solutions" element={<Solutions />} />
             <Route path="/a-propos" element={<About />} />
             <Route path="/contact" element={<Contact />} />
-            {/*<Route path="/assistant" element={<Assistant />} />*/}
         </Route>
         <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
@@ -44,6 +46,7 @@ function AppRoutes() {
         <Route path="/transporteur" element={<TransporteurLayout />}>
             <Route index element={<DashboardPage />} />
             <Route path="/transporteur/vehicules" element={<VehiclesPage />} />
+            <Route path="/transporteur/vehicules/:id" element={<VehiculeDetail />} />
             <Route path="/transporteur/agents" element={<AgentsPage />} />
             <Route
                 path="/transporteur/demandes"
@@ -51,7 +54,7 @@ function AppRoutes() {
             />
             <Route
                 path="demandes-chargement/:id"
-                element={<DemandeChargementDetailPage />}
+                element={<DemandeChargementDetail />}
             />
             <Route
                 path="demandes-chargement/:id/mission"
@@ -61,6 +64,7 @@ function AppRoutes() {
             <Route path="/transporteur/missions/:id" element={<MissionDetailPage />} />
             <Route path="/transporteur/profil" element={<ProfilPageTransporteur />} />
             <Route path="/transporteur/suivi" element={<SuiviVehicules />} />
+            <Route path="/transporteur/signalements/:id" element={<SignalementDetail />}/>
         </Route>
         <Route path="/login" element={<LoginPage />} />
     </Routes>

@@ -12,7 +12,7 @@
 
 
 import camion from "../../../assets/camion.svg";
-
+import { Link } from "react-router-dom";
 import {
   LocateFixed,
 } from "lucide-react";
@@ -137,12 +137,12 @@ export default function FleetMapCard({
           Aperçu de la flotte sur la carte
         </h2>
 
-        <button
-          type="button"
+        <Link
+          to="/transporteur/suivi"
           className="text-sm font-semibold leading-5 text-orange-500"
         >
-          Voir la carte complète →
-        </button>
+          Voir la carte complète 
+        </Link>
       </div>
 
 

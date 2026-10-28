@@ -12,8 +12,6 @@ import { Link } from "react-router-dom";
 import MissionResourceCard from "./MissionResourceCard";
 
 export default function MissionInfoCard({ mission }) {
-  // Si la mission n'est pas encore chargée,
-  // on n'affiche pas la carte.
   if (!mission) {
     return null;
   }
@@ -65,6 +63,24 @@ export default function MissionInfoCard({ mission }) {
       : "—";
 
   // ----------------------------------------------------------
+  // Date de fin prévue
+  // ----------------------------------------------------------
+
+  let dateFinPrevue = "";
+
+  if (demande?.date_fin_prevue) {
+    const date = new Date(demande.date_fin_prevue);
+
+    if (!Number.isNaN(date.getTime())) {
+      dateFinPrevue = date.toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      });
+    }
+  }
+
+  // ----------------------------------------------------------
   // Véhicule
   // ----------------------------------------------------------
 
@@ -96,8 +112,10 @@ export default function MissionInfoCard({ mission }) {
 
   return (
     <section className="w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0px_1px_2px_0px_rgba(0,0,0,0.05)]">
+
       {/* Header */}
       <div className="flex flex-col gap-4 border-b border-slate-100 p-6 sm:flex-row sm:items-center sm:justify-between">
+
         <div className="flex items-center gap-3">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-slate-50">
             <Truck className="size-5 text-cyan-800" />
@@ -133,7 +151,9 @@ export default function MissionInfoCard({ mission }) {
 
       {/* Informations générales */}
       <div className="flex flex-col gap-10 p-6 sm:p-8">
+
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+
           {/* Demandeur */}
           <MissionField
             label="Demandeur"
@@ -178,12 +198,23 @@ export default function MissionInfoCard({ mission }) {
             }
             value={heureChargement}
           />
+
+          {/* Date de fin prévue */}
+          <MissionField
+            label="Date de fin prévue"
+            icon={
+              <CalendarDays className="size-3.5 text-orange-500" />
+            }
+            value={dateFinPrevue || "—"}
+          />
+
         </div>
 
         <div className="h-px w-full bg-slate-100" />
 
         {/* Ressources */}
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+
           {/* Véhicule affecté */}
           <MissionResourceCard
             type="vehicle"
@@ -198,6 +229,7 @@ export default function MissionInfoCard({ mission }) {
             name={agentNom}
             image={agentPhoto}
           />
+
         </div>
       </div>
     </section>
@@ -221,4 +253,3 @@ function MissionField({ label, icon, value }) {
     </div>
   );
 }
-

@@ -26,7 +26,7 @@ export default function ResponsableDetailPage() {
   // L'id du responsable est dans l'URL : /admin/responsables/:id
   const { id } = useParams();
 
-  // Popup affiché (null = aucun)
+  // Popup affiché
   const [popup, setPopup] = useState(null);
 
   // Une action est en cours d'envoi

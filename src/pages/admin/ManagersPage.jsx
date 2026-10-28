@@ -40,7 +40,7 @@ export default function ManagersPage() {
       responsable.prenom?.toLowerCase().includes(texte) ||
       responsable.nom?.toLowerCase().includes(texte);
 
-    // Filtre sur le statut (la valeur du filtre est celle de la base)
+    // Filtre sur le statut
     const correspondStatut =
       status === "Tous les statuts" ||
       responsable.statut_compte === status;
@@ -62,7 +62,7 @@ export default function ManagersPage() {
   // Ouvrir et fermer le tiroir
   // ----------------------------------------------------------
 
-  // Bouton « Créer » : tiroir vide
+  // Bouton « Créer »
   const handleCreate = () => {
     setSelectedResponsable(null);
     setIsDrawerOpen(true);

@@ -19,6 +19,7 @@ export default function CreateDemandeDrawer({
   const [nombreVehicules, setNombreVehicules] = useState("");
   const [dateChargement, setDateChargement] = useState("");
   const [heureChargement, setHeureChargement] = useState("");
+  const [dateFinPrevue, setDateFinPrevue] = useState("");
   const [pointDepart, setPointDepart] = useState("");
   const [destination, setDestination] = useState("");
   const [description, setDescription] = useState("");
@@ -33,6 +34,7 @@ export default function CreateDemandeDrawer({
       setNombreVehicules("");
       setDateChargement("");
       setHeureChargement("");
+      setDateFinPrevue("");
       setPointDepart("");
       setDestination("");
       setDescription("");
@@ -51,6 +53,7 @@ export default function CreateDemandeDrawer({
       !nombreVehicules ||
       !dateChargement ||
       !heureChargement ||
+      !dateFinPrevue ||
       !pointDepart.trim() ||
       !destination.trim()
     ) {
@@ -63,6 +66,7 @@ export default function CreateDemandeDrawer({
       nombre_vehicules_demandes: Number(nombreVehicules),
       date_chargement: dateChargement,
       heure_chargement: heureChargement,
+      date_fin_prevue: dateFinPrevue,
       point_depart: pointDepart.trim(),
       destination: destination.trim(),
       description: description.trim(),
@@ -104,7 +108,7 @@ export default function CreateDemandeDrawer({
 
       {/* Drawer */}
       <aside className="relative z-10 flex h-full w-full max-w-xl flex-col overflow-hidden bg-white shadow-2xl">
-        
+
         {/* Header */}
         <div className="flex shrink-0 items-center justify-between border-b border-gray-100 px-6 py-6 sm:px-8">
           <h2 className="text-xl font-bold leading-7 text-sky-950">
@@ -169,7 +173,7 @@ export default function CreateDemandeDrawer({
               />
             </div>
 
-            {/* Date + Heure */}
+            {/* Date + Heure de chargement */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 
               {/* Date */}
@@ -205,6 +209,28 @@ export default function CreateDemandeDrawer({
                   className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 outline-none focus:border-sky-950"
                 />
               </div>
+            </div>
+
+            {/* Date de fin prévue */}
+            <div className="flex flex-col gap-1.5">
+              <FieldLabel
+                icon={
+                  <CalendarDays className="size-4 text-orange-500/80" />
+                }
+                label="Date et heure de fin prévue *"
+              />
+
+              <input
+                type="datetime-local"
+                value={dateFinPrevue}
+                onChange={(e) => setDateFinPrevue(e.target.value)}
+                min={
+                  dateChargement && heureChargement
+                    ? `${dateChargement}T${heureChargement}`
+                    : undefined
+                }
+                className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 outline-none focus:border-sky-950"
+              />
             </div>
 
             {/* Trajet */}
